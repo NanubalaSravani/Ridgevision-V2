@@ -1,0 +1,13 @@
+backend/
+models/
+notebooks/
+datasets/
+ridgevisionnet_results/
+tests/
+requirements.txt
+requirements-model.txt
+runtime.txt
+.python-version
+Dockerfile
+*.md
+*.docx
