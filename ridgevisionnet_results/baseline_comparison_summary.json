@@ -1,0 +1,51 @@
+{
+  "ridgevision_net": {
+    "mean": 0.8996049286167834,
+    "std": 0.0064399069881250345
+  },
+  "mobilenet_v2": {
+    "mean": 0.910742489372439,
+    "std": 0.0031308822928239363,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "resnet50": {
+    "mean": 0.7993817652451671,
+    "std": 0.006605311382548404,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "densenet121": {
+    "mean": 0.8864136307553295,
+    "std": 0.00264783075901431,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "inception_v3": {
+    "mean": 0.8504367714054978,
+    "std": 0.0007455777479332471,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "efficientnet_b0_plain": {
+    "mean": 0.8982345963111994,
+    "std": 0.008820715425310129,
+    "wilcoxon_p_vs_ridgevisionnet": 1.0
+  },
+  "convnext_tiny": {
+    "mean": 0.899091406272705,
+    "std": 0.004857547140137793,
+    "wilcoxon_p_vs_ridgevisionnet": 0.75
+  },
+  "plain_cnn_from_scratch": {
+    "mean": 0.8223426693826724,
+    "std": 0.013761985925994239,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "svm_rbf": {
+    "mean": 0.24652788969705616,
+    "std": 0.012403046178365186,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  },
+  "random_forest": {
+    "mean": 0.38632794095241624,
+    "std": 0.0030674902582956145,
+    "wilcoxon_p_vs_ridgevisionnet": 0.25
+  }
+}

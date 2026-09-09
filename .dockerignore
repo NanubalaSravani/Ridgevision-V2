@@ -1,0 +1,17 @@
+.git
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+datasets/*
+!datasets/README.md
+model/
+notebooks/
+
+*.zip
+*.msi
+*.docx
+scratch_code.py
+convert_to_docx.py

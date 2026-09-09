@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RidgeVision AI - Non-Invasive ABO Estimation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="config.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lab: { bg: '#F4F3F5', violet: '#4C1D95', violetLight: '#7C3AED' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          boxShadow: {
+            card: '0 4px 24px rgba(76, 29, 149, 0.08), 0 1px 3px rgba(0,0,0,0.04)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background-color: #F4F3F5; }
+    .layer { transition: opacity 0.45s ease, transform 0.45s ease; }
+    .layer-hidden { opacity: 0; pointer-events: none; position: absolute; inset: 0; transform: translateY(12px); }
+    .layer-active { opacity: 1; pointer-events: auto; position: relative; transform: translateY(0); }
+    .prob-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes scanPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.35); }
+      50% { box-shadow: 0 0 0 14px rgba(124, 58, 237, 0); }
+    }
+    .scanner-ring { animation: scanPulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-gray-800 antialiased">
+  <header class="border-b border-violet-100/80 bg-white/70 backdrop-blur-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-lab-violet flex items-center justify-center text-white font-bold text-sm shadow-card">RV</div>
+        <div>
+          <h1 class="text-lg font-semibold text-lab-violet tracking-tight">RidgeVision AI v2</h1>
+          <p class="text-xs text-gray-500">LeakSafe-CGN &middot; Decoupled Hierarchical Biometric Screening</p>
+        </div>
+      </div>
+      <span class="hidden sm:inline-flex items-center gap-2 text-xs font-mono text-gray-600 bg-white px-3 py-1.5 rounded-full shadow-card border border-violet-100">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        LeakSafe-CGN v2.0 &middot; Safety Gated
+      </span>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10 relative min-h-[70vh]">
+    <section id="layer-ingest" class="layer layer-active">
+      <div class="bg-white rounded-2xl shadow-card p-8 md:p-12">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-semibold text-lab-violet mb-2">Fingerprint Scanner</h2>
+          <p class="text-gray-500 text-sm max-w-md mx-auto">
+            Upload a dermatoglyphic imprint for experimental ABO/Rh inference with Grad-CAM explainability.
+          </p>
+        </div>
+
+        <div
+          id="drop-zone"
+          class="relative border-2 border-dashed border-violet-200 rounded-2xl p-12 md:p-16 text-center cursor-pointer hover:border-lab-violetLight hover:bg-violet-50/30 transition-all duration-300"
+        >
+          <div class="scanner-ring inline-flex items-center justify-center w-28 h-28 rounded-full ring-4 ring-violet-400 mb-6">
+            <svg class="w-12 h-12 text-lab-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <p class="text-lab-violet font-medium mb-1">Drag & drop fingerprint image</p>
+          <p class="text-gray-400 text-sm">or click to browse - PNG, JPG, BMP</p>
+          <input type="file" id="file-input" accept="image/*" class="hidden" />
+        </div>
+
+        <p id="ingest-error" class="mt-4 text-center text-sm text-red-600 hidden"></p>
+      </div>
+    </section>
+
+    <section id="layer-inference" class="layer layer-hidden">
+      <div class="bg-white rounded-2xl shadow-card p-10 md:p-14">
+        <div class="text-center mb-10">
+          <h2 class="text-xl font-semibold text-lab-violet mb-2">AI Inference Engine</h2>
+          <p id="inference-status" class="text-sm text-gray-500 font-mono">Initializing ridge preprocessing...</p>
+        </div>
+
+        <div class="w-full max-w-lg mx-auto">
+          <div class="h-2.5 bg-violet-100 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-lab-violet to-violet-400 rounded-full prob-bar" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between mt-3 text-xs font-mono text-gray-400">
+            <span>CLAHE + Gabor</span>
+            <span>LBP / GLCM</span>
+            <span>Fusion MLP</span>
+            <span>Grad-CAM</span>
+          </div>
+        </div>
+
+        <div class="mt-12 flex justify-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-lab-violet animate-bounce" style="animation-delay: 0ms"></span>
+          <span class="w-2 h-2 rounded-full bg-lab-violet animate-bounce" style="animation-delay: 150ms"></span>
+          <span class="w-2 h-2 rounded-full bg-lab-violet animate-bounce" style="animation-delay: 300ms"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="layer-report" class="layer layer-hidden">
+      <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+        <div class="px-8 py-6 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-lab-violet">Diagnostic Report</h2>
+            <p class="text-sm text-gray-500">Dual-branch fusion inference complete</p>
+          </div>
+          <button
+            id="btn-reset"
+            type="button"
+            class="px-5 py-2.5 rounded-xl border border-violet-200 text-lab-violet text-sm font-medium hover:bg-violet-50 transition-colors"
+          >
+            Reset Scanner
+          </button>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+          <div class="p-8">
+            <!-- Decision Safety & Abstention Banner -->
+            <div id="decision-status-container" class="mb-5"></div>
+
+            <!-- Top Prediction & Decoupled Biological Target -->
+            <div class="mb-6 p-6 rounded-xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 shadow-sm">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-gray-400 font-mono mb-1">Top Prediction</p>
+                  <p id="pred-class" class="text-4xl font-bold text-lab-violet font-mono">-</p>
+                  <p class="mt-2 text-sm text-gray-500">
+                    Calibrated Confidence: <span id="pred-confidence" class="font-mono font-semibold text-lab-violet">-</span>%
+                  </p>
+                </div>
+                <div class="text-right space-y-2">
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-100/70 border border-purple-200 text-xs font-medium text-purple-900 font-mono">
+                    <span class="text-purple-600">ABO (Chr 9):</span>
+                    <span id="abo-group" class="font-bold">-</span>
+                  </div>
+                  <br />
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-100/70 border border-indigo-200 text-xs font-medium text-indigo-900 font-mono">
+                    <span class="text-indigo-600">Rh (Chr 1):</span>
+                    <span id="rh-factor" class="font-bold">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conformal Prediction Set Card -->
+            <div class="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-slate-800 uppercase tracking-wider font-mono">Conformal Prediction Set</span>
+                  <span id="coverage-guarantee" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-medium">90% Coverage</span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded text-slate-600 bg-slate-200">Finite-Sample Guaranteed</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-3">
+                Distribution-free set containing the donor phenotype with &ge;90% statistical coverage:
+              </p>
+              <div id="conformal-set-badges" class="flex flex-wrap gap-2 mb-1 font-mono"></div>
+              <p id="abstention-reason-text" class="text-[11px] font-medium text-amber-700 mt-2 hidden"></p>
+            </div>
+
+            <p class="text-xs uppercase tracking-wider text-gray-400 font-mono mb-4">Class Likelihood Matrix</p>
+            <div id="prob-matrix" class="space-y-3 font-mono text-sm"></div>
+          </div>
+
+          <div class="p-8">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-xs uppercase tracking-wider text-gray-400 font-mono">Tiered Explainability Pipeline</p>
+              <div class="flex items-center gap-1 text-[10px] font-mono">
+                <span class="text-violet-300">Original</span>
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3C/svg%3E" class="hidden" alt="" />
+              </div>
+            </div>
+            <p class="text-[11px] text-gray-400 mb-4 italic">
+              Increasing interpretive strength: <span class="text-violet-300 font-medium not-italic">Correlational</span> &rarr; <span class="text-violet-500 font-medium not-italic">Statistical</span> &rarr; <span class="text-lab-violet font-semibold not-italic">Causal</span>
+            </p>
+
+            <!-- Original scan (context, not a tier) -->
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 mb-4 flex items-center gap-3">
+              <div class="w-16 h-16 shrink-0 rounded-lg bg-white border border-gray-100 flex items-center justify-center overflow-hidden">
+                <img id="original-img" alt="Uploaded fingerprint" class="max-w-full max-h-full object-contain" />
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-gray-500">(a) Original Fingerprint</p>
+                <p class="text-[11px] text-gray-400">Raw dermatoglyphic input, unprocessed</p>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <!-- Tier 1: Attention Map -->
+              <div class="rounded-xl border border-violet-100 bg-violet-50/40 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-full bg-violet-200 text-violet-900 text-[10px] font-bold flex items-center justify-center font-mono">1</span>
+                    <p class="text-xs font-semibold text-violet-900">Tier 1 &middot; Attention Map</p>
+                  </div>
+                  <span id="tier1-method-badge" class="text-[10px] font-mono text-violet-600 bg-violet-100 px-2 py-0.5 rounded">Grad-CAM++</span>
+                </div>
+                <div class="flex gap-3">
+                  <div class="w-24 h-24 shrink-0 rounded-lg bg-white border border-violet-100 flex items-center justify-center overflow-hidden">
+                    <img id="tier1-img" alt="Tier 1 attention map" class="max-w-full max-h-full object-contain" />
+                  </div>
+                  <p id="tier1-description" class="text-[11px] text-gray-500 leading-relaxed">
+                    Higher-order backpropagated gradient activations (Grad-CAM++) targeting the model's final conv projection, highlighting fine ridge details.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Tier 2: OAAS -->
+              <div class="rounded-xl border border-violet-200 bg-violet-100/40 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-full bg-violet-400 text-white text-[10px] font-bold flex items-center justify-center font-mono">2</span>
+                    <p class="text-xs font-semibold text-violet-900">Tier 2 &middot; OAAS</p>
+                  </div>
+                  <span class="text-[10px] font-mono text-violet-500">statistical</span>
+                </div>
+                <div class="flex gap-3">
+                  <div class="w-24 h-24 shrink-0 rounded-lg bg-white border border-violet-200 flex items-center justify-center overflow-hidden">
+                    <img id="tier2-img" alt="Tier 2 OAAS orientation-attention alignment" class="max-w-full max-h-full object-contain" />
+                  </div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed">
+                    Orientation-Attention Alignment Score - verifies Tier 1's attention aligns with real dermatoglyphic structure (cores, deltas, ridge orientation).
+                  </p>
+                </div>
+              </div>
+
+              <!-- Tier 3: MCA -->
+              <div class="rounded-xl border border-violet-900/20 bg-lab-violet/5 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-full bg-lab-violet text-white text-[10px] font-bold flex items-center justify-center font-mono">3</span>
+                    <p class="text-xs font-semibold text-lab-violet">Tier 3 &middot; MCA</p>
+                  </div>
+                  <span class="text-[10px] font-mono text-lab-violet">causal</span>
+                </div>
+                <div class="flex gap-3 mb-3">
+                  <div class="w-24 h-24 shrink-0 rounded-lg bg-white border border-violet-100 flex items-center justify-center overflow-hidden">
+                    <img id="tier3-img" alt="Tier 3 minutiae-causal ablation" class="max-w-full max-h-full object-contain" />
+                  </div>
+                  <p class="text-[11px] text-gray-500 leading-relaxed">
+                    Minutiae-Causal Ablation - shows exactly which ridge endings/bifurcations causally drive the prediction, measured by confidence drop after each is inpainted out.
+                  </p>
+                </div>
+                <div class="flex items-center gap-3 text-[10px] text-gray-500 mb-2">
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full" style="background:#22c55e"></span>Ridge ending</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full" style="background:#ef4444"></span>Bifurcation</span>
+                </div>
+                <div id="minutiae-list" class="space-y-1 font-mono"></div>
+              </div>
+            </div>
+
+            <p class="mt-4 text-xs text-gray-400 text-center">
+              Experimental attribution pipeline - not a clinical diagnostic report.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-center text-xs text-gray-400">
+    RidgeVision AI - Academic research prototype. Not intended for medical diagnosis or clinical use.
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const API_URL = window.RIDGEVISION_API_URL
+        || (window.location.protocol === 'file:'
+          ? 'http://127.0.0.1:8000/predict'
+          : `${window.location.origin}/predict`);
+      const CLASS_ORDER = ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'];
+
+      const layerIngest = document.getElementById('layer-ingest');
+      const layerInference = document.getElementById('layer-inference');
+      const layerReport = document.getElementById('layer-report');
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+      const ingestError = document.getElementById('ingest-error');
+      const progressBar = document.getElementById('progress-bar');
+      const inferenceStatus = document.getElementById('inference-status');
+      const predClass = document.getElementById('pred-class');
+      const predConfidence = document.getElementById('pred-confidence');
+      const probMatrix = document.getElementById('prob-matrix');
+      const originalImg = document.getElementById('original-img');
+      const tier1Img = document.getElementById('tier1-img');
+      const tier2Img = document.getElementById('tier2-img');
+      const tier3Img = document.getElementById('tier3-img');
+      const minutiaeList = document.getElementById('minutiae-list');
+      const btnReset = document.getElementById('btn-reset');
+      const decisionStatusContainer = document.getElementById('decision-status-container');
+      const aboGroup = document.getElementById('abo-group');
+      const rhFactor = document.getElementById('rh-factor');
+      const coverageGuarantee = document.getElementById('coverage-guarantee');
+      const conformalSetBadges = document.getElementById('conformal-set-badges');
+      const abstentionReasonText = document.getElementById('abstention-reason-text');
+      const tier1MethodBadge = document.getElementById('tier1-method-badge');
+      const tier1Description = document.getElementById('tier1-description');
+      let lastOriginalDataUrl = null;
+
+      const STATUS_STEPS = [
+        { pct: 18, msg: 'Applying CLAHE contrast normalization...' },
+        { pct: 38, msg: 'Gabor ridge morphology enhancement...' },
+        { pct: 55, msg: 'Extracting LBP histogram and GLCM texture vector...' },
+        { pct: 72, msg: 'Running trained ABO/Rh classifier...' },
+        { pct: 88, msg: 'Generating explainability overlay...' },
+        { pct: 100, msg: 'Finalizing report...' },
+      ];
+
+      let progressTimer = null;
+
+      function showLayer(active) {
+        const layers = [
+          { el: layerIngest, id: 'ingest' },
+          { el: layerInference, id: 'inference' },
+          { el: layerReport, id: 'report' },
+        ];
+        layers.forEach(({ el, id }) => {
+          if (id === active) {
+            el.classList.remove('layer-hidden');
+            el.classList.add('layer-active');
+          } else {
+            el.classList.remove('layer-active');
+            el.classList.add('layer-hidden');
+          }
+        });
+      }
+
+      function clearProgressSimulation() {
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+      }
+
+      function startProgressSimulation() {
+        let step = 0;
+        progressBar.style.width = '0%';
+        inferenceStatus.textContent = STATUS_STEPS[0].msg;
+
+        progressTimer = setInterval(() => {
+          if (step < STATUS_STEPS.length) {
+            progressBar.style.width = STATUS_STEPS[step].pct + '%';
+            inferenceStatus.textContent = STATUS_STEPS[step].msg;
+            step += 1;
+          }
+        }, 520);
+      }
+
+      function renderProbabilityMatrix(allProbabilities) {
+        probMatrix.innerHTML = '';
+        const sorted = CLASS_ORDER
+          .map((label) => ({ label, value: allProbabilities[label] ?? 0 }))
+          .sort((a, b) => b.value - a.value);
+
+        sorted.forEach(({ label, value }) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center gap-3';
+          row.innerHTML = `
+            <span class="w-10 text-lab-violet font-medium">${label}</span>
+            <div class="flex-1 h-6 bg-violet-50 rounded-md overflow-hidden relative">
+              <div class="prob-bar h-full bg-gradient-to-r from-lab-violet to-violet-400 rounded-md" style="width: 0%"></div>
+            </div>
+            <span class="w-14 text-right text-gray-600">${value.toFixed(2)}%</span>
+          `;
+          probMatrix.appendChild(row);
+          requestAnimationFrame(() => {
+            row.querySelector('.prob-bar').style.width = Math.min(value, 100) + '%';
+          });
+        });
+      }
+
+      function renderMinutiaeList(minutiae) {
+        minutiaeList.innerHTML = '';
+        if (!Array.isArray(minutiae) || minutiae.length === 0) return;
+
+        minutiae.slice(0, 4).forEach((m) => {
+          const isEnding = (m.type || '').toLowerCase().includes('ending');
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between text-[10px] bg-white rounded-md px-2 py-1 border border-gray-100';
+          row.innerHTML = `
+            <span class="flex items-center gap-1.5 text-gray-600">
+              <span class="w-1.5 h-1.5 rounded-full" style="background:${isEnding ? '#22c55e' : '#ef4444'}"></span>
+              (${m.x}, ${m.y})
+            </span>
+            <span class="text-gray-400">&Delta;${Number(m.confidence_drop ?? 0).toFixed(3)}</span>
+          `;
+          minutiaeList.appendChild(row);
+        });
+      }
+
+      function renderReport(data) {
+        predClass.textContent = data.predicted_class || '-';
+        predConfidence.textContent = Number(data.confidence || 0).toFixed(2);
+
+        // Decoupled biological targets
+        if (aboGroup) {
+          aboGroup.textContent = data.abo_group || (data.predicted_class ? data.predicted_class.replace(/[+-]/g, '') : '-');
+        }
+        if (rhFactor) {
+          const rh = data.rh_factor || (data.predicted_class && data.predicted_class.includes('+') ? '+' : '-');
+          rhFactor.textContent = rh === '+' ? 'Rh+ (Pos)' : 'Rh- (Neg)';
+        }
+
+        // Conformal Prediction Set & Safety Gating
+        const isAccepted = (data.decision_status || 'ACCEPTED') === 'ACCEPTED';
+        if (decisionStatusContainer) {
+          if (isAccepted) {
+            decisionStatusContainer.innerHTML = `
+              <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-900 shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-7 h-7 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center font-bold text-sm">✓</span>
+                  <div>
+                    <p class="text-xs font-bold uppercase tracking-wider font-mono">Prediction Accepted</p>
+                    <p class="text-[11px] text-emerald-700">Meets calibrated clinical screening safety margin</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-1 rounded bg-emerald-100 border border-emerald-300 font-semibold text-emerald-800">Coverage ${data.coverage_guarantee || '90%'}</span>
+              </div>
+            `;
+          } else {
+            decisionStatusContainer.innerHTML = `
+              <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-between text-amber-900 shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-7 h-7 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-sm">!</span>
+                  <div>
+                    <p class="text-xs font-bold uppercase tracking-wider font-mono text-amber-800">Prediction Withheld</p>
+                    <p class="text-[11px] text-amber-700">${data.abstention_reason || 'Anatomical ambiguity exceeds safety threshold'}</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-1 rounded bg-amber-100 border border-amber-300 font-semibold text-amber-800">Abstention Active</span>
+              </div>
+            `;
+          }
+        }
+
+        if (coverageGuarantee && data.coverage_guarantee) {
+          coverageGuarantee.textContent = `${data.coverage_guarantee} Coverage`;
+        }
+
+        if (conformalSetBadges) {
+          const pSet = data.conformal_prediction_set && data.conformal_prediction_set.length > 0
+            ? data.conformal_prediction_set
+            : [data.predicted_class];
+          conformalSetBadges.innerHTML = pSet
+            .map(
+              (cls) => `
+                <span class="px-3 py-1 rounded-lg ${cls === data.predicted_class ? 'bg-lab-violet text-white shadow-sm' : 'bg-violet-100 text-violet-900 border border-violet-200'} font-mono font-bold text-xs">
+                  ${cls}
+                </span>
+              `
+            )
+            .join('');
+        }
+
+        if (abstentionReasonText) {
+          if (!isAccepted && data.abstention_reason) {
+            abstentionReasonText.textContent = `Alert: ${data.abstention_reason}`;
+            abstentionReasonText.classList.remove('hidden');
+          } else {
+            abstentionReasonText.classList.add('hidden');
+          }
+        }
+
+        // Saliency method badge
+        if (tier1MethodBadge) {
+          if (data.saliency_method === 'gradcam_plus_plus') {
+            tier1MethodBadge.textContent = 'Grad-CAM++ (Neural Backprop)';
+            tier1MethodBadge.className = 'text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded font-medium';
+            if (tier1Description) {
+              tier1Description.innerHTML = 'Higher-order backpropagated gradient activations (Grad-CAM++) targeting the model final conv projection, highlighting fine ridge details.';
+            }
+          } else {
+            tier1MethodBadge.textContent = 'Sobel Heuristic Proxy';
+            tier1MethodBadge.className = 'text-[10px] font-mono text-violet-500 bg-violet-100 px-2 py-0.5 rounded';
+            if (tier1Description) {
+              tier1Description.innerHTML = 'A fast Sobel-gradient saliency proxy showing high-frequency ridge boundaries.';
+            }
+          }
+        }
+
+        renderProbabilityMatrix(data.all_probabilities);
+
+        if (lastOriginalDataUrl) originalImg.src = lastOriginalDataUrl;
+
+        tier1Img.src = data.tier1_attention_b64 || data.grad_cam_b64 || '';
+        tier1Img.alt = 'Tier 1 attention map for ' + data.predicted_class;
+
+        tier2Img.src = data.tier2_oaas_b64 || '';
+        tier2Img.alt = 'Tier 2 OAAS for ' + data.predicted_class;
+
+        tier3Img.src = data.tier3_mca_b64 || '';
+        tier3Img.alt = 'Tier 3 MCA for ' + data.predicted_class;
+
+        renderMinutiaeList(data.top_minutiae);
+      }
+
+      async function submitPrediction(file) {
+        ingestError.classList.add('hidden');
+        showLayer('inference');
+        startProgressSimulation();
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const response = await fetch(API_URL, { method: 'POST', body: formData });
+          const payload = await response.json().catch(() => ({}));
+
+          clearProgressSimulation();
+          progressBar.style.width = '100%';
+
+          if (!response.ok) {
+            throw new Error(payload.detail || payload.error || 'Inference failed.');
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          renderReport(payload);
+          showLayer('report');
+        } catch (err) {
+          clearProgressSimulation();
+          showLayer('ingest');
+          ingestError.textContent = err.message || 'An unexpected error occurred.';
+          ingestError.classList.remove('hidden');
+        }
+      }
+
+      function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) {
+          ingestError.textContent = 'Please select a valid image file.';
+          ingestError.classList.remove('hidden');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => { lastOriginalDataUrl = e.target.result; };
+        reader.readAsDataURL(file);
+
+        submitPrediction(file);
+      }
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (event) => {
+        if (event.target.files[0]) handleFile(event.target.files[0]);
+      });
+
+      dropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropZone.classList.add('border-lab-violet', 'bg-violet-50/40');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-lab-violet', 'bg-violet-50/40');
+      });
+      dropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('border-lab-violet', 'bg-violet-50/40');
+        if (event.dataTransfer.files[0]) handleFile(event.dataTransfer.files[0]);
+      });
+
+      btnReset.addEventListener('click', () => {
+        clearProgressSimulation();
+        fileInput.value = '';
+        ingestError.classList.add('hidden');
+        progressBar.style.width = '0%';
+        showLayer('ingest');
+      });
+
+      showLayer('ingest');
+    })();
+  </script>
+</body>
+</html>

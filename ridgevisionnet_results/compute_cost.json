@@ -1,0 +1,7 @@
+{
+  "ridgevision_net": {
+    "trainable_params": 8378217,
+    "non_trainable_params": 2012071,
+    "latency_ms_per_image_cpu_or_gpu_batch1": 82.7836831410726
+  }
+}

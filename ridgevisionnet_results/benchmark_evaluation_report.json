@@ -1,0 +1,28 @@
+{
+  "summary": {
+    "total_samples": 12,
+    "train_samples": 8,
+    "test_samples": 4,
+    "conformal_nominal_coverage": "90%",
+    "conformal_empirical_coverage": "75.00%",
+    "mean_prediction_set_size": 6.75,
+    "abstention_rate": "100.00%",
+    "ece": 0.3211,
+    "shuffled_control_accuracy": "0.00%"
+  },
+  "multitask_metrics": {
+    "flat_8class_accuracy": 0.25,
+    "flat_8class_macro_f1": 0.2,
+    "flat_8class_precision": 0.2,
+    "flat_8class_recall": 0.2,
+    "abo_4class_accuracy": 0.5,
+    "abo_4class_macro_f1": 0.3889,
+    "rh_2class_accuracy": 0.5,
+    "rh_2class_f1": 0.5
+  },
+  "ece_details": {
+    "ece": 0.3211,
+    "mce": 0.3381
+  },
+  "robustness": null
+}

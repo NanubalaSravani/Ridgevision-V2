@@ -1,0 +1,72 @@
+{
+  "blur": [
+    {
+      "severity": 0,
+      "accuracy": 0.8984018264840182
+    },
+    {
+      "severity": 1,
+      "accuracy": 0.839041095890411
+    },
+    {
+      "severity": 2,
+      "accuracy": 0.6621004566210046
+    }
+  ],
+  "noise": [
+    {
+      "severity": 0,
+      "accuracy": 0.9155251141552512
+    },
+    {
+      "severity": 1,
+      "accuracy": 0.9075342465753424
+    },
+    {
+      "severity": 2,
+      "accuracy": 0.8949771689497716
+    }
+  ],
+  "occlusion": [
+    {
+      "severity": 0,
+      "accuracy": 0.8744292237442922
+    },
+    {
+      "severity": 1,
+      "accuracy": 0.8515981735159818
+    },
+    {
+      "severity": 2,
+      "accuracy": 0.7534246575342466
+    }
+  ],
+  "rotation": [
+    {
+      "severity": 0,
+      "accuracy": 0.910958904109589
+    },
+    {
+      "severity": 1,
+      "accuracy": 0.8858447488584474
+    },
+    {
+      "severity": 2,
+      "accuracy": 0.8253424657534246
+    }
+  ],
+  "downsample": [
+    {
+      "severity": 0,
+      "accuracy": 0.8801369863013698
+    },
+    {
+      "severity": 1,
+      "accuracy": 0.4440639269406393
+    },
+    {
+      "severity": 2,
+      "accuracy": 0.3527397260273973
+    }
+  ]
+}

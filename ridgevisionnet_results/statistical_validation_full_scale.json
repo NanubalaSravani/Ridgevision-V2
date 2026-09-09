@@ -1,0 +1,196 @@
+{
+  "n_samples": 876,
+  "features": {
+    "lbp_uniformity": {
+      "flat_8way": {
+        "anova_F": 73.8356606997977,
+        "anova_p": 9.108361816332941e-84,
+        "eta_squared": 0.37321714618396473,
+        "mutual_information_bits": 0.36204778159661566,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 36.01560906397975,
+        "anova_p": 6.01563189052171e-22,
+        "eta_squared": 0.1102465965851022
+      },
+      "rh_2way": {
+        "anova_F": 114.59116887860878,
+        "anova_p": 3.261947275769424e-25,
+        "eta_squared": 0.11591360765299318
+      }
+    },
+    "lbp_peak": {
+      "flat_8way": {
+        "anova_F": 50.19199801241534,
+        "anova_p": 4.68251038939724e-60,
+        "eta_squared": 0.2881418123973639,
+        "mutual_information_bits": 0.2676672182701585,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 18.506424440197687,
+        "anova_p": 1.2053713660382519e-11,
+        "eta_squared": 0.059857810956132115
+      },
+      "rh_2way": {
+        "anova_F": 50.51775443387428,
+        "anova_p": 2.4526414537421146e-12,
+        "eta_squared": 0.05464227613974671
+      }
+    },
+    "glcm_contrast": {
+      "flat_8way": {
+        "anova_F": 26.6289949920667,
+        "anova_p": 3.463154479198967e-33,
+        "eta_squared": 0.17678531940991307,
+        "mutual_information_bits": 0.1842724549688059,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 11.069037963381227,
+        "anova_p": 3.894008803333818e-07,
+        "eta_squared": 0.03668454807810282
+      },
+      "rh_2way": {
+        "anova_F": 10.005686268014061,
+        "anova_p": 0.0016144800430221607,
+        "eta_squared": 0.011318576818498613
+      }
+    },
+    "glcm_homogeneity": {
+      "flat_8way": {
+        "anova_F": 100.06256475043158,
+        "anova_p": 4.8876596699247265e-107,
+        "eta_squared": 0.44658314458680154,
+        "mutual_information_bits": 0.46608256663740777,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 35.43480127069244,
+        "anova_p": 1.2976277635771145e-21,
+        "eta_squared": 0.10866188826080081
+      },
+      "rh_2way": {
+        "anova_F": 103.84365133551717,
+        "anova_p": 4.0428447942288726e-23,
+        "eta_squared": 0.1061965797841916
+      }
+    },
+    "glcm_energy": {
+      "flat_8way": {
+        "anova_F": 117.06610827587885,
+        "anova_p": 9.835994224153254e-121,
+        "eta_squared": 0.48561827754695,
+        "mutual_information_bits": 0.4756364987855563,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 36.46385565862953,
+        "anova_p": 3.3264860117327564e-22,
+        "eta_squared": 0.11146577029694008
+      },
+      "rh_2way": {
+        "anova_F": 130.14424511173067,
+        "anova_p": 3.3657079706843663e-28,
+        "eta_squared": 0.1296071214322896
+      }
+    },
+    "glcm_correlation": {
+      "flat_8way": {
+        "anova_F": 34.43843629234961,
+        "anova_p": 1.7140035778475236e-42,
+        "eta_squared": 0.21736162700321196,
+        "mutual_information_bits": 0.23217553324528264,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 13.332551270380094,
+        "anova_p": 1.629189627042976e-08,
+        "eta_squared": 0.04385718937323366
+      },
+      "rh_2way": {
+        "anova_F": 23.734587707487883,
+        "anova_p": 1.312594274946618e-06,
+        "eta_squared": 0.026438312651067147
+      }
+    },
+    "ridge_density": {
+      "flat_8way": {
+        "anova_F": 64.54577246093996,
+        "anova_p": 8.542091033555954e-75,
+        "eta_squared": 0.3423347636941133,
+        "mutual_information_bits": 0.31640655563171033,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 25.2645605499107,
+        "anova_p": 1.1158503077282874e-15,
+        "eta_squared": 0.07996854496624771
+      },
+      "rh_2way": {
+        "anova_F": 81.79420069329603,
+        "anova_p": 9.57178516478087e-19,
+        "eta_squared": 0.08557720964823358
+      }
+    },
+    "intensity_entropy": {
+      "flat_8way": {
+        "anova_F": 96.00955554550471,
+        "anova_p": 1.2729333390059471e-103,
+        "eta_squared": 0.43638811645000103,
+        "mutual_information_bits": 0.44286237834813275,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 36.15962839326347,
+        "anova_p": 4.972538403779144e-22,
+        "eta_squared": 0.11063867546714018
+      },
+      "rh_2way": {
+        "anova_F": 104.31447772886321,
+        "anova_p": 3.269399616119562e-23,
+        "eta_squared": 0.10662673414690432
+      }
+    },
+    "intensity_mean": {
+      "flat_8way": {
+        "anova_F": 49.24933777841725,
+        "anova_p": 4.771724438194008e-59,
+        "eta_squared": 0.2842685484974623,
+        "mutual_information_bits": 0.28173978555096435,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 20.03495769927513,
+        "anova_p": 1.4550430393503844e-12,
+        "eta_squared": 0.06448295125640569
+      },
+      "rh_2way": {
+        "anova_F": 78.5035005972622,
+        "anova_p": 4.400425093005372e-18,
+        "eta_squared": 0.08241807043022632
+      }
+    },
+    "intensity_std": {
+      "flat_8way": {
+        "anova_F": 24.893315813284264,
+        "anova_p": 4.615038330830725e-31,
+        "eta_squared": 0.16718894113756688,
+        "mutual_information_bits": 0.19602203918866815,
+        "permutation_p_value": 0.0004997501249375312
+      },
+      "abo_4way": {
+        "anova_F": 12.275924237838398,
+        "anova_p": 7.160677991414495e-08,
+        "eta_squared": 0.04052227915918172
+      },
+      "rh_2way": {
+        "anova_F": 44.62551515724174,
+        "anova_p": 4.242164886645749e-11,
+        "eta_squared": 0.04857857137748167
+      }
+    }
+  },
+  "mcnemar_eval_ready": true
+}
