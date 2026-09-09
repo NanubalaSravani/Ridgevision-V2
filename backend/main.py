@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -10,10 +11,24 @@ from backend.core.config import settings
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Warm up and preload model on startup so user requests don't suffer initial delay
+    try:
+        from backend.ml.inference.predictor import ridgevision_predictor
+
+        ridgevision_predictor._load_trained_model()
+    except Exception as exc:
+        print(f"Startup model warming notice: {exc}")
+    yield
+
+
 app = FastAPI(
     title=settings.app_name,
     version=settings.version,
     description="Experimental dermatoglyphic analysis API for research workflows.",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

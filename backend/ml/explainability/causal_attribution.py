@@ -44,7 +44,7 @@ def minutiae_causal_attribution(
     enhanced_gray: np.ndarray,
     predicted_class: str,
     baseline_confidence: float,
-    max_points: int = 40,
+    max_points: int = 12,
 ) -> dict:
     """Minutiae-Causal Attribution (MCA).
 
