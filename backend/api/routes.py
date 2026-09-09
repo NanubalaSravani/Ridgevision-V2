@@ -24,4 +24,6 @@ async def predict(file: UploadFile = File(...)) -> dict:
     except PredictorError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail="Inference failed.") from exc
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Inference failed: {exc}") from exc
