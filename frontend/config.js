@@ -1,1 +1,5 @@
-window.RIDGEVISION_API_URL = "http://127.0.0.1:8001/predict";
+window.RIDGEVISION_API_URL =
+  window.location.protocol === "file:"
+    ? "http://127.0.0.1:8000/predict"
+    : `${window.location.origin}/predict`;
+
