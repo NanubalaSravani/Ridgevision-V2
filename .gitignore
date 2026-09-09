@@ -12,6 +12,7 @@ __pycache__/
 
 scratch_code.py
 convert_to_docx.py
+convert_to_word.py
 
 model/
 # notebooks/
