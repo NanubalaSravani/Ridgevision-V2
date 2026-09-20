@@ -1,5 +1,8 @@
 # Master Manuscript Tables — Version for Final Experimental Verification
 
+> **PROVENANCE NOTE:** Older RidgeVisionNet ablation results and final LeakSafe-CGN ablation results belong to different experimental configurations and must not be combined. 
+> Furthermore, results must be framed strictly as *computational performance on the evaluated dataset* without implying definitive clinical or biological validity.
+
 This file compiles the core quantitative tables ready for publication in the manuscript.
 
 ## Table 1: Literature Comparative Matrix
