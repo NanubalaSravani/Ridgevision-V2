@@ -16,6 +16,5 @@ COPY models ./models
 # Expose FastAPI port
 EXPOSE 8000
 
-# Start application (supports Render's dynamic $PORT or defaults to 8000)
-CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
-
+# Start application
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

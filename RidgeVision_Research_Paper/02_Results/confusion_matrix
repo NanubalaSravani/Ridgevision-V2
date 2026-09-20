@@ -1,0 +1,21 @@
+# Verified Confusion Matrix
+
+Source: notebooks/90-accuracy.ipynb (Cell 17) & RidgeVision_v2_Comprehensive_Master_Report.md (Table 8.6)
+Evaluated on: Balanced Held-Out Test Set (N = 1,200 images, exactly 150 per class)
+
+## Complete 8 x 8 Confusion Matrix:
+| True Class \ Pred | A+ | A− | AB+ | AB− | B+ | B− | O+ | O− | Total | Recall (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **A+** | **134** | 0 | 5 | 0 | 0 | 0 | 3 | 8 | 150 | 89.3% |
+| **A−** | 0 | **134** | 2 | 2 | 1 | 6 | 3 | 2 | 150 | 89.3% |
+| **AB+** | 6 | 0 | **129** | 0 | 8 | 0 | 3 | 4 | 150 | 86.0% |
+| **AB−** | 0 | 2 | 0 | **138** | 2 | 4 | 0 | 4 | 150 | 92.0% |
+| **B+** | 0 | 2 | 5 | 3 | **138** | 2 | 0 | 0 | 150 | 92.0% |
+| **B−** | 0 | 3 | 0 | 4 | 5 | **138** | 0 | 0 | 150 | 92.0% |
+| **O+** | 7 | 4 | 1 | 1 | 0 | 0 | **127** | 10 | 150 | 84.7% |
+| **O−** | 6 | 1 | 4 | 2 | 1 | 0 | 0 | **136** | 150 | 90.7% |
+
+## Primary Diagnostic Patterns:
+1. Exceptional diagonal dominance across all 8 classes (range: 84.7% to 92.0%).
+2. Primary off-diagonal misclassifications occur between A+ and O- (8 cases) and O+ and O- (10 cases).
+3. Classes AB- and B- exhibit highest true-positive count (138/150 = 92.0%).

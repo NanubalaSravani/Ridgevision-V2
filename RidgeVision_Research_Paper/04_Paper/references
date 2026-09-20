@@ -1,0 +1,17 @@
+# Master Academic References (IEEE / Standard Format)
+
+1. T. P. Susmiarsih, S. Mustofa, and M. Mirfat, "A dermatoglyphic study: Association of fingerprint patterns among ABO blood groups," *Biosaintifika: Journal of Biology & Biology Education*, vol. 8, no. 2, pp. 210–216, 2016.
+2. A. Bharadwaja, P. K. Saraswat, S. K. Agrawal, and P. Banerji, "Pattern of finger-prints in different ABO blood groups," *Journal of Indian Academy of Forensic Medicine*, vol. 26, no. 1, pp. 6–9, 2004.
+3. H. Cummins and C. Midlo, *Finger Prints, Palms and Soles: An Introduction to Dermatoglyphics*. Philadelphia: The Blakiston Company, 1943.
+4. D. Maltoni, D. Maio, A. K. Jain, and S. Prabhakar, *Handbook of Fingerprint Recognition*, 2nd ed. London: Springer-Verlag, 2009.
+5. A. Chattopadhay, A. Sarkar, P. Howlader, and V. N. Balasubramanian, "Grad-CAM++: Generalized gradient-based visual explanations for deep convolutional networks," in *IEEE Winter Conference on Applications of Computer Vision (WACV)*, 2018, pp. 839–847.
+6. R. R. Selvaraju, M. Cogswell, A. Das, R. Vedaldi, D. Parikh, and D. Batra, "Grad-CAM: Visual explanations from deep networks via gradient-based localization," in *IEEE International Conference on Computer Vision (ICCV)*, 2017, pp. 618–626.
+7. S. Woo, J. Park, J. Y. Lee, and I. S. Kweon, "CBAM: Convolutional block attention module," in *European Conference on Computer Vision (ECCV)*, 2018, pp. 3–19.
+8. M. Tan and Q. Le, "EfficientNet: Rethinking model scaling for convolutional neural networks," in *International Conference on Machine Learning (ICML)*, 2019, pp. 6105–6114.
+9. C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, "On calibration of modern neural networks," in *International Conference on Machine Learning (ICML)*, 2017, pp. 1321–1330.
+10. V. Vovk, A. Gammerman, and G. Shafer, *Algorithmic Learning in a Random World*. New York: Springer Science & Business Media, 2005.
+11. A. N. Angelopoulos and S. Bates, "A gentle introduction to conformal prediction and distribution-free uncertainty quantification," *arXiv preprint arXiv:2107.07511*, 2021.
+12. P. Phadke, S. Raut, P. Sawant, A. Ramekar, and P. Badhan, "Fingerprint based blood group detection using CNN," in *Springer Advances in Intelligent Systems and Computing*, 2025.
+13. K. Swathi et al., "Fingerprint-based blood group determination using deep convolutional networks," *International Journal of Advanced Research in Science, Communication and Technology (IJARSCT)*, 2024.
+14. T. Ojala, M. Pietikäinen, and T. Mäenpää, "Multiresolution gray-scale and rotation invariant texture classification with local binary patterns," *IEEE Transactions on Pattern Analysis and Machine Intelligence*, vol. 24, no. 7, pp. 971–987, 2002.
+15. R. M. Haralick, K. Shanmugam, and I. Dinstein, "Textural features for image classification," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-3, no. 6, pp. 610–621, 1973.

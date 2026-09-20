@@ -1,0 +1,21 @@
+# Verified Precision Metrics
+
+Source: notebooks/90-accuracy.ipynb (Cell 16), report_images/ridgevision_train_both_ensemble_report.txt
+
+## Class-Wise Precision (Ensemble Test Set, N = 1,200)
+- **A+**: **0.88** (88.0%)
+- **A−**: **0.92** (92.0%)
+- **AB+**: **0.88** (88.0%)
+- **AB−**: **0.92** (92.0%)
+- **B+**: **0.89** (89.0%)
+- **B−**: **0.92** (92.0%)
+- **O+**: **0.93** (93.0%) [Highest Precision]
+- **O−**: **0.83** (83.0%) [Lowest Precision]
+
+## Aggregate Precision Metrics
+- **Macro Average Precision**: **0.90** (90.0%)
+- **Weighted Average Precision**: **0.90** (90.0%)
+
+## Multi-Task Benchmark Precision
+Source: ridgevisionnet_results/benchmark_evaluation_report.json
+- Flat 8-Class Precision: **0.20**

@@ -1,0 +1,23 @@
+# Verified F1-Score Metrics
+
+Source: notebooks/90-accuracy.ipynb (Cell 16), RidgeVision_v2_Comprehensive_Master_Report.md (Table 8.5)
+
+## Class-Wise F1-Score (Ensemble Test Set, N = 1,200)
+- **A+**: **0.88** (88.0%)
+- **A−**: **0.91** (91.0%)
+- **AB+**: **0.87** (87.0%)
+- **AB−**: **0.92** (92.0%) [Top F1-Score]
+- **B+**: **0.90** (90.0%)
+- **B−**: **0.92** (92.0%) [Top F1-Score]
+- **O+**: **0.89** (89.0%)
+- **O−**: **0.87** (87.0%)
+
+## Aggregate F1 Metrics
+- **Macro Average F1-Score**: **0.90** (89.6%)
+- **Weighted Average F1-Score**: **0.90** (89.6%)
+
+## Multi-Task Decoupled F1-Scores
+Source: ridgevisionnet_results/benchmark_evaluation_report.json
+- Decoupled ABO (4-way): **0.3889**
+- Decoupled Rh (Binary): **0.5000**
+- Flat 8-way: **0.2000**

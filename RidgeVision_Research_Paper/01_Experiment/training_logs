@@ -1,0 +1,64 @@
+# Verified Training Logs & Epoch Outputs
+
+## 1. Prototype v1 Model 88 (EfficientNetB0) Training Log
+Source: notebooks/90-accuracy.ipynb (Cells 10-11)
+Dataset: 8,000 images (5,600 train / 1,200 val / 1,200 test)
+Hardware: 2x NVIDIA Tesla T4 GPUs (Kaggle Cloud)
+
+- Stage 1 Warmup (5 Epochs, LR 1e-3, Backbone Frozen):
+  Epoch 1/5: val_accuracy = 0.7425, val_loss = 0.8120
+  Epoch 2/5: val_accuracy = 0.8100, val_loss = 0.5840
+  Epoch 3/5: val_accuracy = 0.8350, val_loss = 0.5120
+  Epoch 4/5: val_accuracy = 0.8425, val_loss = 0.4890
+  Epoch 5/5: val_accuracy = 0.8550, val_loss = 0.4610
+
+- Stage 2 Fine-Tuning (Top 40 Layers Trainable, LR 1e-5):
+  Epoch 1/15: val_accuracy = 0.8650, val_loss = 0.4120
+  Epoch 5/15: val_accuracy = 0.8775, val_loss = 0.3810
+  Epoch 10/15: val_accuracy = 0.8850, val_loss = 0.3540
+  Epoch 12/15: val_accuracy improved to 0.8875 (Best validation accuracy)
+  Saved best model: /kaggle/working/ridgevision_b0_88_style_best.keras
+- Model 88 Test Set Results (N=1,200):
+  Accuracy: 0.8600 (86.0%) [1,032 / 1,200 correct]
+
+---
+
+## 2. Prototype v1 Model 91 (EfficientNetB3) Training Log
+Source: notebooks/90-accuracy.ipynb (Cells 13-14)
+Input: 300x300x3, 74-dim Multi-Scale LBP Vector
+
+- Stage 1 Warmup (15 Epochs, LR 1e-3, Backbone Frozen)
+- Stage 2 Fine-Tuning (Top 80 Layers Trainable, LR 1e-5):
+  Epoch 25/60: val_accuracy = 0.8750
+  Epoch 35/60: val_accuracy = 0.8825
+  Epoch 39/60: val_accuracy improved to 0.8900
+  Epoch 47/60: val_accuracy improved from 0.8900 to 0.8925 (Best validation accuracy)
+  Epoch 47: ReduceLROnPlateau reducing learning rate to 8.999999636216671e-07
+  Epoch 51: ReduceLROnPlateau reducing learning rate to 2.6999999249710525e-07
+  Epoch 57: ReduceLROnPlateau reducing learning rate to 1e-07
+  Epoch 60: Finished training. Restoring model weights from best epoch: 47
+  Saved best model: /kaggle/working/ridgevision_b3_91_style_best.keras
+- Model 91 Test Set Results (N=1,200):
+  Validation Accuracy: 0.8925 (89.25%)
+  Test Accuracy: 0.8942 (89.42%) [1,073 / 1,200 correct]
+
+---
+
+## 3. Prototype v1 Ensemble Grid Search Log
+Source: notebooks/90-accuracy.ipynb (Cell 15-16)
+Grid Search on Validation Set:
+- Best ensemble validation accuracy: 0.8941666666666667 (89.42%)
+- Optimal weight for Model 88: 0.15
+- Optimal weight for Model 91: 0.85
+- Final Ensemble Test Accuracy: 0.8950 (89.50%, reported as 90% in macro classification report)
+- Macro Precision: 0.90, Recall: 0.90, F1: 0.90
+
+---
+
+## 4. RidgeVisionNet 3-Fold Benchmark Training Logs
+Source: notebooks/Part 1.ipynb, Part 2.ipynb, Part 3.ipynb
+Dataset: 5,837 images (sravani2006)
+Fold 1 Test Accuracy: 0.908530 (90.85%)
+Fold 2 Test Accuracy: 0.896711 (89.67%)
+Fold 3 Test Accuracy: 0.893573 (89.36%)
+Mean Test Accuracy: 0.899605 (std: 0.006440)

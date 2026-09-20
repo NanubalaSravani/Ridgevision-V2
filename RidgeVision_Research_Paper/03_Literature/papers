@@ -1,0 +1,48 @@
+# Annotated Literature Corpus Found in Project
+
+The following peer-reviewed academic papers are directly cited and analyzed in the project repository (`RidgeVision_v2_Comprehensive_Master_Report.md`, `RidgeVision-AI-v2-Research-Plan.md`, and `RidgeVision_v2_Manuscript.md`):
+
+1. **Susmiarsih, T. P., Mustofa, S., & Mirfat, M. (2016)**
+   - *Title*: A dermatoglyphic study: Association of fingerprint patterns among ABO blood groups.
+   - *Journal*: Biosaintifika: Journal of Biology & Biology Education, 8(2), 210–216.
+   - *Findings*: Evaluated 302 subjects. Found loops most frequent in group B (60.36%), whorls in group O (40.45%), arches in group AB (5.12%). Concluded that associations are weak population skews (p < 0.05), not individual diagnostic markers.
+
+2. **Bharadwaja, A., Saraswat, P. K., Agrawal, S. K., & Banerji, P. (2004)**
+   - *Title*: Pattern of finger-prints in different ABO blood groups.
+   - *Journal*: Journal of Indian Academy of Forensic Medicine, 26(1), 6–9.
+   - *Findings*: Evaluated 300 medical students. Confirmed high loop frequencies in Rh-positive individuals. Concluded that high biological overlap prevents deterministic individual classification.
+
+3. **Cummins, H., & Midlo, C. (1943)**
+   - *Title*: Finger Prints, Palms and Soles: An Introduction to Dermatoglyphics.
+   - *Publisher*: The Blakiston Company, Philadelphia.
+   - *Findings*: Foundational medical treatise establishing that epidermal ridges form between the 10th and 24th weeks of human intrauterine gestation and remain immutable throughout life.
+
+4. **Chattopadhay, A., Sarkar, A., Howlader, P., & Balasubramanian, V. N. (2018)**
+   - *Title*: Grad-CAM++: Generalized gradient-based visual explanations for deep convolutional networks.
+   - *Venue*: IEEE Winter Conference on Applications of Computer Vision (WACV), 839–847.
+   - *Role*: Implemented in Tier 1 for higher-order gradient backpropagation.
+
+5. **Woo, S., Park, J., Lee, J. Y., & Kweon, I. S. (2018)**
+   - *Title*: CBAM: Convolutional block attention module.
+   - *Venue*: European Conference on Computer Vision (ECCV), 3–19.
+   - *Role*: Implemented on EfficientNetB0 feature maps (channel ratio r=8, spatial 7x7).
+
+6. **Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017)**
+   - *Title*: On calibration of modern neural networks.
+   - *Venue*: International Conference on Machine Learning (ICML), 1321–1330.
+   - *Role*: Implemented post-hoc Temperature Scaling (T=1.365), reducing ECE from 0.0842 to 0.0412.
+
+7. **Angelopoulos, A. N., & Bates, S. (2021)**
+   - *Title*: A gentle introduction to conformal prediction and distribution-free uncertainty quantification.
+   - *Venue*: arXiv preprint arXiv:2107.07511.
+   - *Role*: Implemented Split Conformal Prediction for marginal coverage guarantees (1 - alpha = 0.90) and clinical abstention.
+
+8. **Phadke, P., Raut, S., Sawant, P., Ramekar, A., & Badhan, P. (2025)**
+   - *Title*: Fingerprint based blood group detection using CNN.
+   - *Venue*: Springer Advances in Intelligent Systems and Computing.
+   - *Critique*: Prior work reporting ~88% accuracy without subject split audits or uncertainty rejection.
+
+9. **Swathi, K., et al. (2024)**
+   - *Title*: Fingerprint-based blood group determination using deep convolutional networks.
+   - *Venue*: IJARSCT.
+   - *Critique*: Prior work reporting high test accuracy on random image splits without biological decoupling.

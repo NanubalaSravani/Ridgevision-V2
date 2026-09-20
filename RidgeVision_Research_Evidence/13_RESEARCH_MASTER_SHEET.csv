@@ -1,0 +1,71 @@
+Category,Parameter,Value,Source_File,Source_Location,Verification_Status,Notes
+Project,Name,RidgeVision AI,backend/core/config.py,Line 9,VERIFIED,Primary application name
+Project,Version,0.1.0,backend/core/config.py,Line 10,VERIFIED,FastAPI backend version
+Project,Standard Image Size,224,backend/core/config.py,Line 11,VERIFIED,224x224 input resolution
+Dataset,Primary Benchmark Corpus,sravani2006/fingerprint-blood-group-classification-dataset,RidgeVision_v2_Comprehensive_Master_Report.md,Section 2.1,VERIFIED,Kaggle benchmark dataset
+Dataset,Primary Total Images,5837,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,Classified across 8 phenotypes
+Dataset,A+ Image Count,402,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,6.89% of corpus (weight: 1.815)
+Dataset,A- Image Count,1009,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,17.29% of corpus (weight: 0.723)
+Dataset,AB+ Image Count,708,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,12.13% of corpus (weight: 1.031)
+Dataset,AB- Image Count,761,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,13.04% of corpus (weight: 0.959)
+Dataset,B+ Image Count,652,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,11.17% of corpus (weight: 1.119)
+Dataset,B- Image Count,741,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,12.69% of corpus (weight: 0.985)
+Dataset,O+ Image Count,852,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,14.60% of corpus (weight: 0.856)
+Dataset,O- Image Count,712,RidgeVision_v2_Comprehensive_Master_Report.md,Table 2.1,VERIFIED,12.20% of corpus (weight: 1.025)
+Dataset,Prototype Dataset,abhiramshibaraya/fingerprint-based-blood-group-detection,notebooks/90-accuracy.ipynb,Cell 4,VERIFIED,Used for Model 88 and Model 91
+Dataset,Prototype Total Images,8000,notebooks/90-accuracy.ipynb,Cell 4,VERIFIED,1000 images per class (balanced)
+Dataset,Donor / Subject Count,NOT FOUND IN PROJECT FILES,datasets/README.md,Global,NOT_FOUND,Subject IDs absent from Kaggle uploads
+Dataset,Sensor Specifications,NOT FOUND IN PROJECT FILES,datasets/README.md,Global,NOT_FOUND,Scanner make and DPI unrecorded
+Preprocessing,Grayscale Conversion,0.299R + 0.587G + 0.114B,backend/ml/preprocessing/fingerprint.py,Line 16,VERIFIED,cv2.COLOR_BGR2GRAY
+Preprocessing,Resampling Algorithm,cv2.INTER_AREA,backend/ml/preprocessing/fingerprint.py,Line 17,VERIFIED,Area interpolation
+Preprocessing,CLAHE Clip Limit,2.6,backend/ml/preprocessing/fingerprint.py,Line 19,VERIFIED,Histogram clip threshold
+Preprocessing,CLAHE Grid Size,(8, 8),backend/ml/preprocessing/fingerprint.py,Line 19,VERIFIED,Local contextual blocks
+Preprocessing,Gaussian Kernel Size,(3, 3),backend/ml/preprocessing/fingerprint.py,Line 21,VERIFIED,Denoising kernel (sigma=0)
+Preprocessing,Gabor Orientations,8,backend/ml/preprocessing/fingerprint.py,Line 24,VERIFIED,Angles: np.linspace(0, pi, 8, endpoint=False)
+Preprocessing,Gabor Kernel Size,(17, 17),backend/ml/preprocessing/fingerprint.py,Line 25,VERIFIED,Spatial support
+Preprocessing,Gabor Sigma,4.0,backend/ml/preprocessing/fingerprint.py,Line 25,VERIFIED,Gaussian envelope standard deviation
+Preprocessing,Gabor Lambda,10.0,backend/ml/preprocessing/fingerprint.py,Line 25,VERIFIED,Ridge wavelength
+Preprocessing,Gabor Gamma,0.55,backend/ml/preprocessing/fingerprint.py,Line 25,VERIFIED,Spatial aspect ratio
+Feature_Extraction,Texture Vector Dimension,30,backend/ml/feature_engineering/texture.py,Line 78,VERIFIED,Canonical 30-dim vector
+Feature_Extraction,LBP Parameters,P=8 R=1 uniform,backend/ml/feature_engineering/texture.py,Line 19,VERIFIED,10-bin normalized histogram
+Feature_Extraction,GLCM Distance,1 pixel,backend/ml/feature_engineering/texture.py,Line 31,VERIFIED,Displacement distance
+Feature_Extraction,GLCM Angles,0 45 90 135 deg,backend/ml/feature_engineering/texture.py,Line 32,VERIFIED,4 canonical directions
+Feature_Extraction,GLCM Descriptors,12 features,backend/ml/feature_engineering/texture.py,Line 40,VERIFIED,Mean and std of 6 properties
+Architecture,Backbone Network,EfficientNetB0,backend/ml/models/architecture.py,Line 205,VERIFIED,Pretrained on ImageNet
+Architecture,CBAM Reduction Ratio,8,backend/ml/models/architecture.py,Line 216,VERIFIED,Channel attention squeeze ratio
+Architecture,CBAM Spatial Kernel,7x7,backend/ml/models/architecture.py,Line 216,VERIFIED,Spatial attention convolution
+Architecture,Shared Latent Units,256,backend/ml/models/architecture.py,Line 230,VERIFIED,Dense layer with ReLU
+Architecture,Shared Dropout Rate,0.35,backend/ml/models/architecture.py,Line 231,VERIFIED,Dropout probability
+Architecture,ABO Head,Dense(4 units softmax),backend/ml/models/architecture.py,Line 235,VERIFIED,Chromosome 9
+Architecture,Rh Head,Dense(1 unit sigmoid),backend/ml/models/architecture.py,Line 236,VERIFIED,Chromosome 1
+Architecture,Flat Head,Dense(8 units softmax),backend/ml/models/architecture.py,Line 237,VERIFIED,Joint 8 classes
+Architecture,Trainable Parameters,8378217,ridgevisionnet_results/compute_cost.json,Line 3,VERIFIED,RidgeVisionNet trainable params
+Architecture,Non-Trainable Parameters,2012071,ridgevisionnet_results/compute_cost.json,Line 4,VERIFIED,RidgeVisionNet non-trainable params
+Architecture,Total Parameters,10390288,ridgevisionnet_results/compute_cost.json,Global,VERIFIED,Sum of trainable and non-trainable
+Training,Optimizer,Adam,RidgeVision_v2_Comprehensive_Master_Report.md,Table 5.1,VERIFIED,beta1=0.9 beta2=0.999 eps=1e-7
+Training,Warmup Learning Rate,1e-3,RidgeVision_v2_Comprehensive_Master_Report.md,Table 5.1,VERIFIED,Stage 1 head warmup
+Training,Fine-Tuning Learning Rate,1e-5,RidgeVision_v2_Comprehensive_Master_Report.md,Table 5.1,VERIFIED,Stage 2 backbone fine-tuning
+Training,Batch Size,32,RidgeVision_v2_Comprehensive_Master_Report.md,Table 5.1,VERIFIED,Batch size
+Training,Random Seed,42,notebooks/90-accuracy.ipynb,Cell 4,VERIFIED,Pinned across all notebooks
+Training,Hardware,2x Tesla T4 GPUs,notebooks/90-accuracy.ipynb,Cell 2,VERIFIED,Kaggle Cloud GPU instance
+Results,Ensemble Test Accuracy,0.895 (90%),notebooks/90-accuracy.ipynb,Cell 16,VERIFIED,1074/1200 on held-out test split
+Results,Model 88 Test Accuracy,0.860 (86%),notebooks/90-accuracy.ipynb,Cell 16,VERIFIED,1032/1200 test samples
+Results,Model 91 Test Accuracy,0.8942 (89.4%),notebooks/90-accuracy.ipynb,Cell 16,VERIFIED,1073/1200 test samples
+Results,RidgeVisionNet 3-Fold Mean Acc,0.899605 (89.96%),ridgevisionnet_results/baseline_comparison_summary.json,Line 3,VERIFIED,std: 0.006440
+Results,MobileNetV2 3-Fold Mean Acc,0.910742 (91.07%),ridgevisionnet_results/baseline_comparison_summary.json,Line 7,VERIFIED,std: 0.003131
+Results,ResNet50 3-Fold Mean Acc,0.799382 (79.94%),ridgevisionnet_results/baseline_comparison_summary.json,Line 12,VERIFIED,std: 0.006605
+Results,DenseNet121 3-Fold Mean Acc,0.886414 (88.64%),ridgevisionnet_results/baseline_comparison_summary.json,Line 17,VERIFIED,std: 0.002648
+Results,InceptionV3 3-Fold Mean Acc,0.850437 (85.04%),ridgevisionnet_results/baseline_comparison_summary.json,Line 22,VERIFIED,std: 0.000746
+Results,Plain EfficientNetB0 Mean Acc,0.898235 (89.82%),ridgevisionnet_results/baseline_comparison_summary.json,Line 27,VERIFIED,std: 0.008821
+Results,ConvNeXt-Tiny Mean Acc,0.899091 (89.91%),ridgevisionnet_results/baseline_comparison_summary.json,Line 32,VERIFIED,std: 0.004858
+Results,Plain CNN (Scratch) Mean Acc,0.822343 (82.23%),ridgevisionnet_results/baseline_comparison_summary.json,Line 37,VERIFIED,std: 0.013762
+Results,SVM RBF Mean Acc,0.246528 (24.65%),ridgevisionnet_results/baseline_comparison_summary.json,Line 42,VERIFIED,std: 0.012403
+Results,Random Forest Mean Acc,0.386328 (38.63%),ridgevisionnet_results/baseline_comparison_summary.json,Line 47,VERIFIED,std: 0.003067
+Results,Ablation Full Test Acc,0.910959 (91.10%),ridgevisionnet_results/ablation_results.json,Line 3,VERIFIED,Full model reference
+Results,Ablation No Orientation Field,0.896119 (89.61%),ridgevisionnet_results/ablation_results.json,Line 7,VERIFIED,delta: -0.014840
+Results,Ablation Single Branch Ridge,0.797945 (79.79%),ridgevisionnet_results/ablation_results.json,Line 27,VERIFIED,delta: -0.113014
+Results,Randomized Label Sanity Control,0.126100 (12.61%),RidgeVision_v2_Comprehensive_Master_Report.md,Table 8.2,VERIFIED,Collapses to chance (~12.5%)
+Results,Temperature Parameter T,1.365,RidgeVision_v2_Comprehensive_Master_Report.md,Section 7.1,VERIFIED,Optimized on validation set
+Results,Raw ECE,0.0842,RidgeVision_v2_Comprehensive_Master_Report.md,Section 7.1,VERIFIED,Uncalibrated expected calibration error
+Results,Calibrated ECE,0.0412,RidgeVision_v2_Comprehensive_Master_Report.md,Section 7.1,VERIFIED,Over 51% error reduction
+Results,Conformal Quantile Threshold q_hat,0.724,RidgeVision_v2_Comprehensive_Master_Report.md,Section 7.2,VERIFIED,At 1 - alpha = 0.90
