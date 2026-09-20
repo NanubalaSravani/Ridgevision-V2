@@ -1,4 +1,4 @@
-# Master Tables for Research Paper
+# Master Manuscript Tables — Version for Final Experimental Verification
 
 This file compiles the core quantitative tables ready for publication in the manuscript.
 
@@ -7,7 +7,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | *Phadke et al. (2025)* | Custom CNN | Random Image Split | Flat 8-Class | None | None (Forced Guess) |
 | *Swathi et al. (2024)* | Standard CNN | Random Image Split | Flat 8-Class | Qualitative CAM | None (Forced Guess) |
-| *ScienceDirect (2026)* | ResNet50 / VGG | Stratified Random | Flat 8-Class | Heatmap Visuals | Uncalibrated Softmax |
+| *[Author et al., 2026]* | ResNet50 / VGG | Stratified Random | Flat 8-Class | Heatmap Visuals | Uncalibrated Softmax |
 | **LeakSafe-CGN (Ours)** | **EfficientNet + CBAM** | **pHash-based pseudo-subject / near-duplicate grouping** | **Decoupled Multi-Task (ABO + Rh + Joint 8-Class)** | **Grad-CAM++ & Null OAAS** | **Split Conformal Sets** |
 
 ## Table 2: Benchmark Dataset Cohort Distribution (N = 5,837)
@@ -23,7 +23,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | **O−** | O | − | 712 | 12.20% | 1.025 |
 | **Total Corpus** | — | — | **5,837** | **100.00%** | — |
 
-## Table 3: Full Quantitative Baseline Comparison (Held-Out Test Partitions)
+## Table 3: Quantitative Benchmark Comparison Under 3-Fold Stratified Cross-Validation
 | Model Architecture | Input Modality | Mean Test Acc | Std (+/- sigma) | Macro F1 | ECE (Calib) | Latency (ms) | Trainable Params | Wilcoxon p vs Ours |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Linear SVM** | Unified Texture (30-dim) | 52.4% | +/- 1.24% | 0.511 | 0.284 | 1.2 ms | — | p = 0.002 |
@@ -58,7 +58,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | **Additive Noise** | 91.55% | 90.75% | 89.50% | Highly resilient to sensor noise |
 | **In-Plane Rotation** | 91.10% | 88.58% | 82.53% | Preserved up to ±15° |
 | **Optical Blur** | 89.84% | 83.90% | 66.21% | Rapid degradation under high blur |
-| **Spatial Downsample** | 88.01% | 44.41% | 35.27% | Catastrophic collapse below Nyquist |
+| **Spatial Downsample** | 88.01% | 44.41% | 35.27% | Substantial degradation at high downsampling severity |
 | **Peripheral Occlusion**| 87.44% | 85.16% | 75.34% | Degrades when center core/deltas are occluded |
 
 ## Table 6: Uncertainty Quantification & Conformal Calibration
