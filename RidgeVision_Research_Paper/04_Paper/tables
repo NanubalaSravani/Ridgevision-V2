@@ -8,7 +8,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | *Phadke et al. (2025)* | Custom CNN | Random Image Split | Flat 8-Class | None | None (Forced Guess) |
 | *Swathi et al. (2024)* | Standard CNN | Random Image Split | Flat 8-Class | Qualitative CAM | None (Forced Guess) |
 | *ScienceDirect (2026)* | ResNet50 / VGG | Stratified Random | Flat 8-Class | Heatmap Visuals | Uncalibrated Softmax |
-| **LeakSafe-CGN (Ours)** | **EfficientNet + CBAM** | **Grouped Subject Audit** | **Hierarchical Multi-Task** | **Grad-CAM++ & Null OAAS** | **Split Conformal Sets** |
+| **LeakSafe-CGN (Ours)** | **EfficientNet + CBAM** | **pHash-based pseudo-subject / near-duplicate grouping** | **Decoupled Multi-Task (ABO + Rh + Joint 8-Class)** | **Grad-CAM++ & Null OAAS** | **Split Conformal Sets** |
 
 ## Table 2: Benchmark Dataset Cohort Distribution (N = 5,837)
 | Phenotype Class | Target ABO (Chr 9) | Target Rh (Chr 1) | Image Count (N) | Percentage (%) | Class Weight |
@@ -50,7 +50,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | **Single-Branch Appearance** | Texture branch removed | 90.18% | -0.92% | Handcrafted texture provides orthogonal domain signal |
 | **Single-Branch Texture** | Deep CNN branch removed | 79.79% | -11.31% | Texture alone lacks sufficient spatial granularity |
 | **No Fine-Tuning** | Frozen backbone weights | 86.64% | -4.46% | Fine-tuning top 40 layers is strictly required |
-| **Randomized-Label Control** | Labels randomly permuted | **12.61%** | **-78.49%** | **Complete collapse to chance: proves zero partition leakage** |
+| **Randomized-Label Control** | Labels randomly permuted | **12.61%** | **-78.49%** | **Performance collapsed to approximately chance level, providing a negative-control check against label-independent predictive structure** |
 
 ## Table 5: Physical Perturbation Robustness Trajectory
 | Perturbation Type | Severity 0 | Severity 1 | Severity 2 | Failure Pattern |
@@ -67,7 +67,7 @@ This file compiles the core quantitative tables ready for publication in the man
 | **Expected Calibration Error (ECE)** | 0.0842 | 0.0412 | 51.1% Reduction |
 | **Brier Score** | 0.141 | 0.119 | Improved |
 | **Conformal Empirical Coverage** | — | 90.00% | Reached Target Coverage |
-| **Synthetic Out-of-Distribution Rejection** | — | 100.00% | Perfect Safety Abstention |
+| **Synthetic Out-of-Distribution Rejection** | — | 100.00% | 100% rejection rate on the evaluated synthetic OOD set |
 
 ## Table 7: Statistical Feature Validation (ANOVA F-Tests)
 | Feature Name | 8-Way F-Statistic | 8-Way p-value | 8-Way η² | Mutual Info (bits) |
