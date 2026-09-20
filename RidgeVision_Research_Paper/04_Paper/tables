@@ -64,3 +64,29 @@ This file compiles the core quantitative tables ready for publication in the man
 | **O+** | 0.93 | 0.85 | 0.99 | 0.89 | 150 |
 | **O−** | 0.83 | 0.91 | 0.97 | 0.87 | 150 |
 | **Overall Macro** | **0.898** | **0.895** | **0.985** | **0.896** | **1,200** |
+
+## Table 6: Physical Perturbation Robustness Trajectory
+| Perturbation Type | Severity 0 | Severity 1 | Severity 2 | Failure Pattern |
+| :--- | :---: | :---: | :---: | :--- |
+| **Additive Noise** | 91.55% | 90.75% | 89.50% | Highly resilient to sensor noise |
+| **In-Plane Rotation** | 91.10% | 88.58% | 82.53% | Preserved up to ±15° |
+| **Optical Blur** | 89.84% | 83.90% | 66.21% | Rapid degradation under high blur |
+| **Spatial Downsample** | 88.01% | 44.41% | 35.27% | Catastrophic collapse below Nyquist |
+| **Peripheral Occlusion**| 87.44% | 85.16% | 75.34% | Degrades when center core/deltas are occluded |
+
+## Table 7: Uncertainty Quantification & Conformal Calibration
+| Metric | Raw (Uncalibrated) | Calibrated (T* = 1.365) | Improvement / Status |
+| :--- | :---: | :---: | :---: |
+| **Expected Calibration Error (ECE)** | 0.0842 | 0.0412 | 51.1% Reduction |
+| **Brier Score** | 0.141 | 0.119 | Improved |
+| **Conformal Empirical Coverage** | — | 90.00% | Reached Target Coverage |
+| **Synthetic Out-of-Distribution Rejection** | — | 100.00% | Perfect Safety Abstention |
+
+## Table 8: Statistical Feature Validation (ANOVA F-Tests)
+| Feature Name | 8-Way F-Statistic | 8-Way p-value | 8-Way η² | Mutual Info (bits) |
+| :--- | :---: | :---: | :---: | :---: |
+| `glcm_energy` | 117.07 | < 0.001 | 0.4856 | 0.4756 |
+| `glcm_homogeneity` | 100.06 | < 0.001 | 0.4466 | 0.4661 |
+| `intensity_entropy` | 96.01 | < 0.001 | 0.4364 | 0.4578 |
+| `lbp_uniformity` | 73.84 | < 0.001 | 0.3732 | 0.3620 |
+| `ridge_density` | 64.55 | < 0.001 | 0.3423 | 0.3204 |
