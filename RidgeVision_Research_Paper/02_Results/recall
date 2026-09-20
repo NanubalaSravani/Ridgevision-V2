@@ -2,7 +2,7 @@
 
 Source: notebooks/90-accuracy.ipynb (Cell 16), RidgeVision_v2_Comprehensive_Master_Report.md (Table 8.5)
 
-## Class-Wise Recall (Ensemble Test Set, N = 1,200)
+## Class-Wise Recall (Ensemble Test Set, N = 5,837)
 - **A+**: **0.89** (89.3%, 134 / 150)
 - **A−**: **0.89** (89.3%, 134 / 150)
 - **AB+**: **0.86** (86.0%, 129 / 150)

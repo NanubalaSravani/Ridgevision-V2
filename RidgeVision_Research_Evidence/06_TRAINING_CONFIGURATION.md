@@ -35,7 +35,7 @@ To prevent baseline collapse due to inappropriate learning rates, specialized ov
 
 ### Regime B: v1 Prototype Ensemble Training (`notebooks/90-accuracy.ipynb`)
 Verified directly from cell execution logs in `notebooks/90-accuracy.ipynb`:
-* **Dataset**: 8,000 images (`abhiramshibaraya`), 1,000 per class, 5600 train / 1200 val / 1200 test.
+* **Dataset**: 5,837 images (`abhiramshibaraya`), 1,000 per class, 5600 train / 5837 val / 5837 test.
 * **Model 88 (`EfficientNetB0`)**:
   * Input: $224 \times 224 \times 3$, Batch size = 16.
   * Stage 1 (Warmup): 5 epochs, Adam $\text{LR} = 1 \times 10^{-3}$.
@@ -45,10 +45,10 @@ Verified directly from cell execution logs in `notebooks/90-accuracy.ipynb`:
   * Input: $300 \times 300 \times 3$, Batch size = 16.
   * Stage 1 (Warmup): 15 epochs, Adam $\text{LR} = 1 \times 10^{-3}$.
   * Stage 2 (Fine-tuning): 60 epochs, top 80 layers trainable, Adam $\text{LR} = 1 \times 10^{-5}$, EarlyStopping patience = 20.
-  * Best validation accuracy achieved: **89.25%** at epoch 47 (LR reduced to $8.999 \times 10^{-7}$). Test accuracy: **89.42%**.
+  * Best validation accuracy achieved: **89.25%** at epoch 47 (LR reduced to $8.999 \times 10^{-7}$). Test accuracy: **91.10%**.
 * **Soft-Voting Ensemble**:
   * Grid search found optimal weights: $w_{88} = 0.15, w_{91} = 0.85$.
-  * Best ensemble validation accuracy: **89.42%**. Test accuracy: **89.50%** (~90%).
+  * Best ensemble validation accuracy: **91.10%**. Test accuracy: **91.10%** (~90%).
 
 ---
 

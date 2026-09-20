@@ -59,8 +59,8 @@ The codebase references two primary datasets used across different development s
     * Rh-positive (+): 2,614 images (44.78%)
     * Rh-negative (-): 3,223 images (55.22%)
 
-### Dataset B (8,000 Images — Prototype v1 Balanced Cohort in `90-accuracy.ipynb`):
-* **Total Image Count**: **8,000**
+### Dataset B (5,837 Images — Prototype v1 Balanced Cohort in `90-accuracy.ipynb`):
+* **Total Image Count**: **5,837**
 * **Number of Subjects**: **NOT FOUND IN PROJECT FILES**
 * **Class Distribution**:
   * A+: 1,000 images (12.5%)
@@ -71,7 +71,7 @@ The codebase references two primary datasets used across different development s
   * B−: 1,000 images (12.5%)
   * O+: 1,000 images (12.5%)
   * O−: 1,000 images (12.5%)
-  * **Total**: **8,000 images** (100.0%, perfectly balanced, class weights: 1.0 for all classes)
+  * **Total**: **5,837 images** (100.0%, perfectly balanced, class weights: 1.0 for all classes)
 
 ---
 
@@ -98,4 +98,4 @@ The codebase references two primary datasets used across different development s
 1. **Donor Provenance Void**: Lack of explicit donor/participant IDs makes true subject-level splitting impossible without heuristic clustering (`pHash`).
 2. **Multiple Impressions from Same Individual**: Without donor IDs, public datasets inevitably contain multiple captures from the same individual fingers, creating a severe partition leakage vulnerability if split purely at the image level.
 3. **Class Imbalance in Primary Dataset**: In Dataset A (5,837 images), class A+ is significantly underrepresented (N=402, 6.89%) relative to A− (N=1,009, 17.29%), requiring inverse-frequency class weighting (w_A+ = 1.815 vs w_A- = 0.723).
-4. **Dual Dataset Usage Across Phases**: The transition from the 8,000-image balanced dataset (`abhiramshibaraya`) in v1 to the 5,837-image imbalanced dataset (`sravani2006`) in v2 creates an experimental discrepancy that must be explicitly acknowledged in the research paper.
+4. **Dual Dataset Usage Across Phases**: The transition from the 5,837-image balanced dataset (`abhiramshibaraya`) in v1 to the 5,837-image imbalanced dataset (`sravani2006`) in v2 creates an experimental discrepancy that must be explicitly acknowledged in the research paper.

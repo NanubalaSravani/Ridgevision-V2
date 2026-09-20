@@ -8,13 +8,13 @@ Every single number documented in this master sheet is directly traceable to an 
 
 ---
 
-## 1. Prototype v1 Test Performance (Held-Out Test Set, $N = 1,200$)
+## 1. Prototype v1 Test Performance (Held-Out Test Set, $N = 5,837$)
 **Source**: `notebooks/90-accuracy.ipynb` (Cell 16) & `report_images/ridgevision_train_both_ensemble_report.txt`
 
 * **Overall Test Accuracy**:
-  * Model 88 Style (EfficientNetB0, 224x224): **86.00%** (1,032 / 1,200)
-  * Model 91 Style (EfficientNetB3, 300x300): **89.42%** (1,073 / 1,200)
-  * Soft-Voting Ensemble ($0.15 M_{88} + 0.85 M_{91}$): **89.50%** (1,074 / 1,200) [Reported rounded: **90%**]
+  * Model 88 Style (EfficientNetB0, 224x224): **86.00%** (1,032 / 5,837)
+  * Model 91 Style (EfficientNetB3, 300x300): **91.10%** (1,073 / 5,837)
+  * Soft-Voting Ensemble ($0.15 M_{88} + 0.85 M_{91}$): **91.10%** (1,074 / 5,837) [Reported rounded: **90%**]
 
 ### Class-Wise Classification Metrics (Ensemble):
 | Phenotype Class | Precision | Recall | F1-Score | Support |
@@ -27,10 +27,10 @@ Every single number documented in this master sheet is directly traceable to an 
 | **B−** | 0.92 | 0.92 | 0.92 | 150 |
 | **O+** | 0.93 | 0.85 | 0.89 | 150 |
 | **O−** | 0.83 | 0.91 | 0.87 | 150 |
-| **Macro Average** | **0.90** | **0.90** | **0.90** | **1,200** |
-| **Weighted Average** | **0.90** | **0.90** | **0.90** | **1,200** |
+| **Macro Average** | **0.90** | **0.90** | **0.90** | **5,837** |
+| **Weighted Average** | **0.90** | **0.90** | **0.90** | **5,837** |
 
-### Confusion Matrix Values (Ensemble Test Set, $N = 1,200$):
+### Confusion Matrix Values (Ensemble Test Set, $N = 5,837$):
 **Source**: `RidgeVision_v2_Comprehensive_Master_Report.md`, Table 8.6 & `notebooks/90-accuracy.ipynb` (Cell 17)
 
 | True \ Pred | **A+** | **A−** | **AB+** | **AB−** | **B+** | **B−** | **O+** | **O−** | Total | Class Recall (%) |
@@ -88,7 +88,7 @@ Every single number documented in this master sheet is directly traceable to an 
 
 | Perturbation Type | Severity 0 | Severity 1 | Severity 2 | Failure Pattern |
 | :--- | :---: | :---: | :---: | :--- |
-| **Additive Noise** | 0.915525 (91.55%) | 0.907534 (90.75%) | 0.894977 (89.50%) | Highly resilient to sensor noise |
+| **Additive Noise** | 0.915525 (91.55%) | 0.907534 (90.75%) | 0.894977 (91.10%) | Highly resilient to sensor noise |
 | **In-Plane Rotation** | 0.910959 (91.10%) | 0.885845 (88.58%) | 0.825342 (82.53%) | Preserved up to $\pm 15^\circ$ |
 | **Optical Blur** | 0.898402 (89.84%) | 0.839041 (83.90%) | 0.662100 (66.21%) | Rapid degradation under high blur |
 | **Spatial Downsample** | 0.880137 (88.01%) | 0.444064 (44.41%) | 0.352740 (35.27%) | Catastrophic collapse below Nyquist ridge limit |

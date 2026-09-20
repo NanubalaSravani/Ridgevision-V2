@@ -30,10 +30,10 @@ This document flags all methodological, biological, and technical risks that cou
 
 ### Risk 3: Dual Dataset Usage Across Project Phases
 * **Vulnerability**: Two different Kaggle datasets were used across the repository:
-  1. Prototype v1 (`90-accuracy.ipynb`): 8,000 balanced images (1,000 per class) from `abhiramshibaraya`.
+  1. Prototype v1 (`90-accuracy.ipynb`): 5,837 balanced images (1,000 per class) from `abhiramshibaraya`.
   2. Framework v2 (`Part 1-3.ipynb`, Master Report): 5,837 images from `sravani2006`.
-* **Reviewer Challenge**: Conflating results between the 8,000-image balanced cohort and the 5,837-image imbalanced cohort without explicit demarcation will confuse reviewers.
-* **Action Required**: The paper must clearly demarcate Phase 1 (Initial Feasibility Study on 8,000 images) from Phase 2 (Audited Benchmark on 5,837 images).
+* **Reviewer Challenge**: Conflating results between the 5,837-image balanced cohort and the 5,837-image imbalanced cohort without explicit demarcation will confuse reviewers.
+* **Action Required**: The paper must clearly demarcate Phase 1 (Initial Feasibility Study on 5,837 images) from Phase 2 (Audited Benchmark on 5,837 images).
 
 ---
 

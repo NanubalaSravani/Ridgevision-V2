@@ -230,9 +230,9 @@ The following claims are scientifically unsupportable, contradict clinical liter
 | **Grad-CAM++ higher-order attributions** | `backend/ml/explainability/grad_cam.py` | Computed via `tf.GradientTape()` on final conv layer of EfficientNet | Wang et al. (2024); Chattopadhay et al. (2018) |
 | **Orientation-Attention Alignment (OAAS)** | `backend/ml/explainability/attention_alignment.py` | Cosine similarity against continuous Sobel orientation field + permutation test | Patil & Ingle (2021); Koura et al. (2022) |
 | **Minutiae-Causal Attribution (MCA)** | `backend/ml/explainability/causal_attribution.py` | Crossing Number skeletonization + inpainting occlusion sensitivity | Bansal et al. (2012); Humbe et al. (2007) |
-| **Prototype v1 test performance** | `notebooks/90-accuracy.ipynb` (Cells 16–17) | Test accuracy: 89.50% ($1,074/1,200$), Macro F1: 0.90, full $8\times 8$ confusion matrix | `RidgeVision_v2_Comprehensive_Master_Report.md` (Table 8.6) |
+| **Prototype v1 test performance** | `notebooks/90-accuracy.ipynb` (Cells 16–17) | Test accuracy: 91.10% ($1,074/5,837$), Macro F1: 0.90, full $8\times 8$ confusion matrix | `RidgeVision_v2_Comprehensive_Master_Report.md` (Table 8.6) |
 | **Dataset A sample distribution** | `backend/ml/training/dataset_manifest.py` | 5,837 images ($A^+: 402, A^-: 1009, \dots, O^-: 712$) | Kaggle: `sravani2006` |
-| **Dataset B sample distribution** | `notebooks/90-accuracy.ipynb` (Cell 4) | 8,000 images (exactly 1,000 per class balanced) | Kaggle: `abhiramshibaraya` |
+| **Dataset B sample distribution** | `notebooks/90-accuracy.ipynb` (Cell 4) | 5,837 images (exactly 1,000 per class balanced) | Kaggle: `abhiramshibaraya` |
 | **Serialized model binaries** | Local disk verification | `models/ridgevision_model.keras` (49.5 MB), `ridgevision_full_model.weights.h5` (168 MB) | Verified on filesystem |
 | **Non-deterministic biological prior** | Synthesis of clinical papers | Dermatoglyphics correlate weakly ($p < 0.05$); no single-print deterministic prediction | Patil & Ingle (2021); Paudel et al. (2025); Susmiarsih (2016) |
 | **Absence of clinical provenance** | Dataset metadata audit | Kaggle sets lack donor demographics, scanner DPI, or serological protocols | Transparently documented as limitation in Section 9 |

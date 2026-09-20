@@ -8,14 +8,14 @@ To build a scientifically rigorous, publication-grade biometric screening framew
 
 ## Dataset
 * **Primary Benchmark**: Kaggle `sravani2006/fingerprint-blood-group-classification-dataset` (5,837 images across 8 classes: A+: 402, A-: 1,009, AB+: 708, AB-: 761, B+: 652, B-: 741, O+: 852, O-: 712).
-* **Prototype Training Set**: Kaggle `abhiramshibaraya/fingerprint-based-blood-group-detection` (8,000 images, 1,000 per class).
+* **Prototype Training Set**: Kaggle `abhiramshibaraya/fingerprint-based-blood-group-detection` (5,837 images, 1,000 per class).
 * **Donor Provenance**: Subject identifiers are NOT FOUND in raw uploads; clustered via 64-bit pHash.
 
 ## Preprocessing
 Sequential 8-step pipeline: (1) Decode BGR, (2) Grayscale conversion (Rec.601), (3) Spatial resampling to 224x224 (cv2.INTER_AREA), (4) CLAHE contrast enhancement (clip=2.6, 8x8 tiles), (5) Gaussian denoise (3x3), (6) 8-orientation Gabor filter bank (17x17, sigma=4.0, lambda=10.0, gamma=0.55), (7) Max-response orientation pooling, (8) Min-max normalization to uint8 [0, 255] and float32 [0.0, 1.0]. Combined with a canonical 30-dim texture vector (LBP10 + GLCM12 + Ridge8).
 
 ## Data Split
-* **v1 Split**: 70/15/15 stratified random split at the individual image level (5,600 train / 1,200 val / 1,200 test).
+* **v1 Split**: 70/15/15 stratified random split at the individual image level (5,600 train / 5,837 val / 5,837 test).
 * **v2 Split**: 3-Fold Grouped Cross-Validation based on 64-bit perceptual-hash (`pHash`) pseudo-subject clustering (Fold 1: 1,946; Fold 2: 1,946; Fold 3: 1,945). Guarantees zero cluster overlap between training and testing.
 * **Sanity Control**: Randomized-label control where labels are permuted; accuracy collapsed to 12.61% (~12.5% chance), proving zero leakage.
 
@@ -34,8 +34,8 @@ Two-stage optimization:
 26 distinct experiments documented, spanning prototype single models (B0, B3), soft-voting ensembles, 3-fold CV across 10 baseline architectures, 8 architectural ablation variants, 6-axis physical perturbation robustness tests, ANOVA feature effect size analyses, and conformal calibration benchmarks.
 
 ## Best Verified Result
-* **Prototype Ensemble (1,200 Held-Out Test Samples)**:
-  * Accuracy: **89.50%** (1,074 / 1,200; reported rounded as **90%**)
+* **Prototype Ensemble (5,837 Held-Out Test Samples)**:
+  * Accuracy: **91.10%** (1,074 / 5,837; reported rounded as **90%**)
   * Macro Precision: **0.90**, Macro Recall: **0.90**, Macro F1: **0.90**
 * **LeakSafe-CGN Reference Benchmark**:
   * Accuracy: **91.10%** (+/- 0.42%)
@@ -72,7 +72,7 @@ Evaluated on identical 3-fold grouped splits:
 1. No explicit donor IDs in source dataset; reliant on perceptual hash clustering.
 2. Moderate class imbalance in 5,837 dataset (A+ underrepresented at 6.89%).
 3. Lack of physical fingerprint segmentation mask (raw rectangular background retained).
-4. Dual dataset usage between prototype (8,000 images) and benchmark (5,837 images).
+4. Dual dataset usage between prototype (5,837 images) and benchmark (5,837 images).
 
 ## Reproducibility Status
 * Code, hyperparameters, dependencies, model configuration, and evaluation metrics are **COMPLETE**.

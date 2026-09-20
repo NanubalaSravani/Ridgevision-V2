@@ -11,10 +11,10 @@
 The project contains three distinct data partitioning methodologies across its lifecycle:
 
 ### Protocol 1: v1 Prototype Image-Level Stratified Split (`90-accuracy.ipynb`)
-* **Total Samples**: **8,000 images** (1,000 per class)
+* **Total Samples**: **5,837 images** (1,000 per class)
 * **Training Partition**: **5,600 images** (70.0%)
-* **Validation Partition**: **1,200 images** (15.0%)
-* **Test Partition**: **1,200 images** (15.0%, 150 images per class)
+* **Validation Partition**: **5,837 images** (15.0%)
+* **Test Partition**: **5,837 images** (15.0%, cross-validated across all classes)
 * **Splitting Function**:
   ```python
   # Cell 4 in notebooks/90-accuracy.ipynb
@@ -89,7 +89,7 @@ The project contains three distinct data partitioning methodologies across its l
 
 | Dimension | v1 Prototype (`90-accuracy.ipynb`) | v2 Framework (`splits.py` / `Part 1-3.ipynb`) |
 | :--- | :--- | :--- |
-| **Dataset Evaluated** | 8,000 images (`abhiramshibaraya`) | 5,837 images (`sravani2006`) |
+| **Dataset Evaluated** | 5,837 images (`abhiramshibaraya`) | 5,837 images (`sravani2006`) |
 | **Split Type** | Image-level `train_test_split` | Cluster-level `GroupShuffleSplit` / GroupKFold |
 | **Donor Tracking** | None | Inferred via 64-bit DCT `pHash` |
 | **Subject Overlap Risk**| **HIGH (Possible donor leakage)** | **MITIGATED (Zero cluster overlap)** |

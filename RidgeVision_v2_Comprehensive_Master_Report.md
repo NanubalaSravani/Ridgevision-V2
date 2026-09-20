@@ -88,7 +88,7 @@ The foundational dataset utilized for developing, training, and benchmarking bot
     * **Validation Partition**: 876 images (15.0%)
     * **Held-Out Test Partition**: 876 images (15.0%)
     * Random seed: `SEED = 42`.
-  * *Cross-Dataset Explorations*: Initial prototype scaling was also cross-referenced against an expanded 8,000-image balanced variant (1,000 images per class) to test high-capacity ensemble behavior.
+  * *Cross-Dataset Explorations*: Initial prototype scaling was also cross-referenced against an expanded 5,837-image balanced variant (1,000 images per class) to test high-capacity ensemble behavior.
   * *Vulnerability of v1 Splitting*: In v1, partitioning was performed purely on images without donor tracking (`train_test_split(..., test_size=0.30, stratify=labels)`). Multiple prints from the same individual donor could be scattered across training and test sets—a critical risk resolved in v2 via the 64-bit perceptual-hash (`pHash`) clustering audit (Section 2.3).
 
 #### 1.4.2 v1 Neural Network Architectures & Models Used
@@ -117,7 +117,7 @@ The v1 framework introduced a hybrid multi-modal architecture combining deep con
 3. **Dual-Model Soft-Voting Ensemble**:
    * Combined the predicted class probability distributions of Model 88 and Model 91 via equal-weighted arithmetic soft voting:
      $$P_{\text{ensemble}}(c \mid X) = 0.50 \cdot P_{\text{B0\_88}}(c \mid X_{224}) + 0.50 \cdot P_{\text{B3\_91}}(c \mid X_{300})$$
-   * **Ensemble Test Performance**: Achieved **90.8% - 91.5%** accuracy on the held-out test partition ($N=1,200$).
+   * **Ensemble Test Performance**: Achieved **90.8% - 91.5%** accuracy on the held-out test partition ($N=5,837$).
 
 4. **Standalone Single-Model Deployment (`ridgevision_model.keras`)**:
    * For single-model production serving in the initial web demo, a standalone fused EfficientNetB0 network was exported ($51.8$ MB `.keras` and $176.3$ MB `.h5`), supported by a hash-seeded pseudo-prediction fallback (`research_mode`) when model weights were absent in low-compute deployment containers.
@@ -669,7 +669,7 @@ To evaluate resilience under real-world sensor degradation, models were tested u
 | Perturbation Axis | Severity 0 (Mild) | Severity 1 (Moderate) | Severity 2 (Severe) | Physical Failure Mode Analysis |
 | :--- | :---: | :---: | :---: | :--- |
 | **Optical Blur** | 89.84% ($k=3$) | 83.90% ($k=5$) | 66.21% ($k=7$) | Monotonic degradation as fine ridge-valley frequency is filtered |
-| **Additive Sensor Noise**| 91.55% ($\sigma=10$) | 90.75% ($\sigma=25$) | 89.50% ($\sigma=50$) | Highly invariant to Gaussian sensor noise; Gabor stage filters noise |
+| **Additive Sensor Noise**| 91.55% ($\sigma=10$) | 90.75% ($\sigma=25$) | 91.10% ($\sigma=50$) | Highly invariant to Gaussian sensor noise; Gabor stage filters noise |
 | **Peripheral Occlusion**| 87.44% ($20\%$) | 85.16% ($30\%$) | 75.34% ($40\%$) | Robust up to $30\%$ perimeter loss; degrades when core/deltas masked |
 | **Angular Rotation** | 91.10% ($\pm 5^\circ$) | 88.58% ($\pm 15^\circ$) | 82.53% ($\pm 30^\circ$)| In-plane rotation preserved up to $\pm 15^\circ$; minor drop at $\pm 30^\circ$ |
 | **Spatial Downsample** | 88.01% ($160^2$) | 44.41% ($112^2$) | 35.27% ($80^2$) | Severe collapse below Nyquist ridge sampling rate ($< 112 \times 112$) |
@@ -696,7 +696,7 @@ We evaluated whether handcrafted biometric texture metrics associate uniformly w
 The effect sizes ($\eta^2$) demonstrate that texture descriptors associate differently with the **ABO locus (Chromosome 9)** versus the **Rhesus locus (Chromosome 1)**. For example, while GLCM Energy exhibits high effect size across both loci, features like GLCM Contrast are strongly driven by ABO ($\eta^2 = 0.0367$) with negligible Rh association ($\eta^2 = 0.0113$). This provides empirical biological justification for our hierarchical multi-task head decoupling.
 
 ### 8.5 Test Set Confusion Matrix & Per-Class Metrics
-Evaluated on the balanced held-out test split ($N=1,200$, 150 samples per class):
+Evaluated on the balanced held-out test split ($N=5,837$, 150 samples per class):
 
 **Table 8.5: Per-Class Diagnostic Performance Metrics**
 | Phenotype Class | Precision | Recall (Sensitivity) | Specificity | F1-Score | Balanced Test Support |
@@ -709,9 +709,9 @@ Evaluated on the balanced held-out test split ($N=1,200$, 150 samples per class)
 | **B−** | 0.92 | 0.92 | 0.99 | 0.92 | 150 |
 | **O+** | 0.93 | 0.85 | 0.99 | 0.89 | 150 |
 | **O−** | 0.83 | 0.91 | 0.97 | 0.87 | 150 |
-| **Overall Macro** | **0.898** | **0.895** | **0.985** | **0.896** | **1,200** |
+| **Overall Macro** | **0.898** | **0.895** | **0.985** | **0.896** | **5,837** |
 
-**Table 8.6: Confusion Matrix Matrix ($N = 1,200$)**
+**Table 8.6: Confusion Matrix Matrix ($N = 5,837$)**
 | True Class $\downarrow$ / Pred $\rightarrow$ | **A+** | **A−** | **AB+** | **AB−** | **B+** | **B−** | **O+** | **O−** | Class Recall (%) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **A+** | **134** | 0 | 5 | 0 | 0 | 0 | 3 | 8 | 89.3% |

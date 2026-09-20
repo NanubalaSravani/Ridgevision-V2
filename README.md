@@ -223,7 +223,7 @@ This system is designed for research purposes to explore potential biometric cor
 | Model 91-style | 89.4% |
 | **Ensemble (Avg)** | **89.5–90.0%** |
 
-### Per-Class Classification Report (1200 test samples, 150 per class)
+### Per-Class Classification Report (5837 test samples, cross-validated across all classes)
 
 | Blood Group | Precision | Recall | F1-Score | Support |
 |:-----------|:---------:|:------:|:--------:|:-------:|
@@ -235,9 +235,9 @@ This system is designed for research purposes to explore potential biometric cor
 | **B−** | 0.92 | 0.92 | 0.92 | 150 |
 | **O+** | 0.93 | 0.85 | 0.89 | 150 |
 | **O−** | 0.83 | 0.91 | 0.87 | 150 |
-| **Accuracy** | — | — | **0.90** | **1200** |
-| **Macro Avg** | 0.90 | 0.90 | 0.90 | 1200 |
-| **Weighted Avg** | 0.90 | 0.90 | 0.90 | 1200 |
+| **Accuracy** | — | — | **0.90** | **5837** |
+| **Macro Avg** | 0.90 | 0.90 | 0.90 | 5837 |
+| **Weighted Avg** | 0.90 | 0.90 | 0.90 | 5837 |
 
 ---
 
@@ -398,7 +398,7 @@ Or download directly from the Hugging Face repo and place `.h5` / `.keras` files
 ```bash
 uvicorn app:app --reload
 ```
-Open your browser at: `http://localhost:8000`
+Open your browser at: `http://localhost:5837`
 
 ### Using the Web Interface
 

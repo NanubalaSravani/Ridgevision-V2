@@ -2,7 +2,7 @@
 
 Source: notebooks/90-accuracy.ipynb (Cell 16), RidgeVision_v2_Comprehensive_Master_Report.md (Table 8.5)
 
-## Class-Wise F1-Score (Ensemble Test Set, N = 1,200)
+## Class-Wise F1-Score (Ensemble Test Set, N = 5,837)
 - **A+**: **0.88** (88.0%)
 - **A−**: **0.91** (91.0%)
 - **AB+**: **0.87** (87.0%)

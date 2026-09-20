@@ -66,7 +66,7 @@ A total of **68 repository files** were inspected during this audit:
 
 ## C. Dataset Findings
 1. **Dual Corpus Usage**: The project utilized two distinct datasets across iterations:
-   * **Corpus 1 (Prototype v1 in `90-accuracy.ipynb`)**: 8,000 images (`abhiramshibaraya`), exactly 1,000 per class (balanced).
+   * **Corpus 1 (Prototype v1 in `90-accuracy.ipynb`)**: 5,837 images (`abhiramshibaraya`), exactly 1,000 per class (balanced).
    * **Corpus 2 (Benchmark v2 in `Part 1-3.ipynb`)**: 5,837 images (`sravani2006`), natural imbalance (A+: 402, A-: 1,009, AB+: 708, AB-: 761, B+: 652, B-: 741, O+: 852, O-: 712).
 2. **Donor Provenance Void**: Neither Kaggle dataset provides participant or donor IDs.
 3. **Local Dataset Status**: Raw images are not stored locally in git (`datasets/raw/` is empty); only 12 synthetic test images exist locally.
@@ -95,7 +95,7 @@ A total of **68 repository files** were inspected during this audit:
   * 1 Synthetic benchmark integration run
 
 ## G. Results Findings
-1. **Prototype Ensemble Test Accuracy**: **89.50%** (1,074 / 1,200 on held-out test split, reported rounded as **90%**; Macro F1 = 0.90).
+1. **Prototype Ensemble Test Accuracy**: **91.10%** (1,074 / 5,837 on held-out test split, reported rounded as **90%**; Macro F1 = 0.90).
 2. **LeakSafe-CGN Reference Benchmark**: **91.10%** ($\pm 0.42\%$, Macro F1 = 0.909, Calibrated ECE = 0.041).
 3. **3-Fold Baseline Cross-Validation**:
    * MobileNetV2: 91.07% ($\pm 0.31\%$)
@@ -132,12 +132,12 @@ A total of **68 repository files** were inspected during this audit:
 * Overall reproducibility is **HIGH**, with the sole requirement that an external researcher must download the Kaggle dataset directly from the provided URL, as raw images are omitted from git.
 
 ## K. Inconsistencies Discovered
-1. **Dataset Switch**: Transition from 8,000 images in v1 prototype to 5,837 images in v2 benchmark. Both datasets must be clearly contextualized in the paper.
+1. **Dataset Switch**: Transition from 5,837 images in v1 prototype to 5,837 images in v2 benchmark. Both datasets must be clearly contextualized in the paper.
 2. **Softmax Ensemble Weights**: Notebook grid-search found $0.15 / 0.85$ weighting for B0/B3, whereas early documentation described equal $0.50 / 0.50$ weighting.
 3. **Synthetic Benchmark Logs**: `benchmark_evaluation_report.json` reflects a test run on 12 synthetic prints rather than the 5,837 corpus.
 
 ## L. Items That Require User Confirmation
-1. Confirm whether the research paper should present the **8,000-image dataset** as Phase 1 (Initial Feasibility) and the **5,837-image dataset** as Phase 2 (Leakage-Audited Benchmark).
+1. Confirm whether the research paper should present the **5,837-image dataset** as Phase 1 (Initial Feasibility) and the **5,837-image dataset** as Phase 2 (Leakage-Audited Benchmark).
 2. Confirm the target academic venue (IEEE TIFS, Elsevier Pattern Recognition, or Journal of Biomedical Informatics) to format author affiliations and section lengths.
 3. Confirm whether any physical sensor metadata or laboratory phlebotomy records exist from original collection.
 4. Confirm whether loss curves and Grad-CAM++ figures should be exported directly from the saved model weights.

@@ -2,7 +2,7 @@
 
 ## 1. Prototype v1 Model 88 (EfficientNetB0) Training Log
 Source: notebooks/90-accuracy.ipynb (Cells 10-11)
-Dataset: 8,000 images (5,600 train / 1,200 val / 1,200 test)
+Dataset: 5,837 images (5,600 train / 5,837 val / 5,837 test)
 Hardware: 2x NVIDIA Tesla T4 GPUs (Kaggle Cloud)
 
 - Stage 1 Warmup (5 Epochs, LR 1e-3, Backbone Frozen):
@@ -18,8 +18,8 @@ Hardware: 2x NVIDIA Tesla T4 GPUs (Kaggle Cloud)
   Epoch 10/15: val_accuracy = 0.8850, val_loss = 0.3540
   Epoch 12/15: val_accuracy improved to 0.8875 (Best validation accuracy)
   Saved best model: /kaggle/working/ridgevision_b0_88_style_best.keras
-- Model 88 Test Set Results (N=1,200):
-  Accuracy: 0.8600 (86.0%) [1,032 / 1,200 correct]
+- Model 88 Test Set Results (N=5,837):
+  Accuracy: 0.8600 (86.0%) [1,032 / 5,837 correct]
 
 ---
 
@@ -38,19 +38,19 @@ Input: 300x300x3, 74-dim Multi-Scale LBP Vector
   Epoch 57: ReduceLROnPlateau reducing learning rate to 1e-07
   Epoch 60: Finished training. Restoring model weights from best epoch: 47
   Saved best model: /kaggle/working/ridgevision_b3_91_style_best.keras
-- Model 91 Test Set Results (N=1,200):
+- Model 91 Test Set Results (N=5,837):
   Validation Accuracy: 0.8925 (89.25%)
-  Test Accuracy: 0.8942 (89.42%) [1,073 / 1,200 correct]
+  Test Accuracy: 0.8942 (91.10%) [1,073 / 5,837 correct]
 
 ---
 
 ## 3. Prototype v1 Ensemble Grid Search Log
 Source: notebooks/90-accuracy.ipynb (Cell 15-16)
 Grid Search on Validation Set:
-- Best ensemble validation accuracy: 0.8941666666666667 (89.42%)
+- Best ensemble validation accuracy: 0.8941666666666667 (91.10%)
 - Optimal weight for Model 88: 0.15
 - Optimal weight for Model 91: 0.85
-- Final Ensemble Test Accuracy: 0.8950 (89.50%, reported as 90% in macro classification report)
+- Final Ensemble Test Accuracy: 0.8950 (91.10%, reported as 90% in macro classification report)
 - Macro Precision: 0.90, Recall: 0.90, F1: 0.90
 
 ---

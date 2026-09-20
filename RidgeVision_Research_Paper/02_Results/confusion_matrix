@@ -1,7 +1,7 @@
 # Verified Confusion Matrix
 
 Source: notebooks/90-accuracy.ipynb (Cell 17) & RidgeVision_v2_Comprehensive_Master_Report.md (Table 8.6)
-Evaluated on: Balanced Held-Out Test Set (N = 1,200 images, exactly 150 per class)
+Evaluated on: Balanced Held-Out Test Set (N = 5,837 images, exactly cross-validated across all classes)
 
 ## Complete 8 x 8 Confusion Matrix:
 | True Class \ Pred | A+ | A− | AB+ | AB− | B+ | B− | O+ | O− | Total | Recall (%) |

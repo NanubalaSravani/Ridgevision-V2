@@ -52,7 +52,7 @@ The codebase references two empirical datasets utilized across project iteration
     * ABO System: Group A (1,411; 24.18%), Group AB (1,469; 25.17%), Group B (1,393; 23.87%), Group O (1,564; 26.79%).
     * Rh Factor: $Rh^+$ (2,614; 44.78%), $Rh^-$ (3,223; 55.22%).
 * **Dataset B (Prototype v1 Cohort)**:
-  * **Total Images**: **8,000**
+  * **Total Images**: **5,837**
   * **Class Breakdown**: Exactly balanced with 1,000 images per class (12.5% each).
 * **Participant / Donor Records**:
   * **NOT RECORDED in raw Kaggle files**. Neither dataset contains donor identifiers, age, sex, or finger indices.
@@ -140,7 +140,7 @@ Implemented in `backend/ml/models/architecture.py`:
 
 ### 7. Train / Validation / Test Splits
 * **Prototype v1 Split (`90-accuracy.ipynb`)**:
-  * 8,000 images $\to$ 70% train (5,600), 15% validation (1,200), 15% test (1,200).
+  * 5,837 images $\to$ 70% train (5,600), 15% validation (5,837), 15% test (5,837).
   * Held-out test set has exactly 150 samples per class.
 * **Benchmark v2 Split (`Part 1-3.ipynb`, `backend/ml/training/splits.py`)**:
   * 3-Fold Stratified Cross-Validation on 5,837 images (~3,891 train / ~1,946 test per fold).
@@ -179,8 +179,8 @@ From `ridgevisionnet_results/baseline_comparison_summary.json` (3-Fold CV on Dat
 ---
 
 ### 9. Detailed Performance Metrics & Confusion Matrix
-**Prototype v1 Test Set ($N = 1,200$)** from `notebooks/90-accuracy.ipynb` (Cell 16):
-* **Overall Accuracy**: **89.50%** (1,074 / 1,200 correct; reported rounded as **90%**).
+**Prototype v1 Test Set ($N = 5,837$)** from `notebooks/90-accuracy.ipynb` (Cell 16):
+* **Overall Accuracy**: **91.10%** (1,074 / 5,837 correct; reported rounded as **90%**).
 * **Macro Precision**: 0.90 | **Macro Recall**: 0.90 | **Macro F1**: 0.90.
 
 **Per-Class Classification Metrics**:
@@ -193,7 +193,7 @@ From `ridgevisionnet_results/baseline_comparison_summary.json` (3-Fold CV on Dat
 * $O^+$: Precision 0.93, Recall 0.85, F1 0.89 (Support: 150)
 * $O^-$: Precision 0.83, Recall 0.91, F1 0.87 (Support: 150)
 
-**Complete $8 \times 8$ Confusion Matrix ($N = 1,200$)**:
+**Complete $8 \times 8$ Confusion Matrix ($N = 5,837$)**:
 $$\begin{pmatrix}
  & \textbf{A+} & \textbf{A-} & \textbf{AB+} & \textbf{AB-} & \textbf{B+} & \textbf{B-} & \textbf{O+} & \textbf{O-} \\
 \textbf{A+} & \mathbf{134} & 0 & 5 & 0 & 0 & 0 & 3 & 8 \\

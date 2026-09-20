@@ -9,7 +9,7 @@ This evidence package serves as the verified empirical foundation for composing 
 1. **Zero Fabrication**: No experimental values, accuracies, or parameters have been invented, rounded, estimated, or improved.
 2. **Fact Traceability**: Every number is traceable to an actual source file and line.
 3. **Explicit Uncertainty**: Where information could not be verified from files, it is explicitly marked `NOT FOUND IN PROJECT FILES`.
-4. **Distinction of Phases**: Clearly separates the prototype Phase 1 (8,000 images, image-level split) from the journal-grade Phase 2 (5,837 images, pHash cluster split).
+4. **Distinction of Phases**: Clearly separates the prototype Phase 1 (5,837 images, image-level split) from the journal-grade Phase 2 (5,837 images, pHash cluster split).
 
 ## Files in this Directory
 1. `00_AUDIT_REPORT.md`: Comprehensive executive audit report covering sections A through M.

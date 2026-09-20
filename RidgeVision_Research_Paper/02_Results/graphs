@@ -19,7 +19,7 @@
   plt.ylabel('True')
   plt.title('Ensemble Confusion Matrix')
   ```
-* **Associated Experiment**: `EXP-03` (Model 88 + Model 91 Soft-Voting Ensemble on 1,200 test images)
+* **Associated Experiment**: `EXP-03` (Model 88 + Model 91 Soft-Voting Ensemble on 5,837 test images)
 * **Publication Readiness**: **Needs Export to Vector / High-Res PNG**. The figure exists as an embedded Jupyter cell output; for an IEEE/Elsevier submission, it should be re-rendered as a vector PDF or high-DPI (>=300 DPI) TIFF/PNG with standardized font sizes.
 * **Important Values Shown**:
   * Diagonal elements: A+ (134), A- (134), AB+ (129), AB- (138), B+ (138), B- (138), O+ (127), O- (136)
@@ -64,6 +64,6 @@
 | **TAB-06** | Systematic Architectural Ablation Matrix | Master Report Section 8.2, Table 8.2 & JSON | Complete | 8 ablation variants, test accuracies, and $\Delta$ vs full model |
 | **TAB-07** | Perturbation Stress Testing Trajectory | Master Report Section 8.3, Table 8.3 & JSON | Complete | Accuracies across 6 perturbation axes and 3 severities |
 | **TAB-08** | Disaggregated ANOVA $F$-Statistics & $\eta^2$ | Master Report Section 8.4, Table 8.4 & JSON | Complete | $F$-values, $p$-values, effect sizes for 8-way, 4-way, 2-way |
-| **TAB-09** | Per-Class Diagnostic Performance ($N = 1,200$) | Master Report Section 8.5, Table 8.5 & Notebook | Complete | Precision, Recall, Specificity, F1 per class |
-| **TAB-10** | Empirical Confusion Matrix ($N = 1,200$) | Master Report Section 8.5, Table 8.6 & Notebook | Complete | Full $8 \times 8$ confusion matrix table |
+| **TAB-09** | Per-Class Diagnostic Performance ($N = 5,837$) | Master Report Section 8.5, Table 8.5 & Notebook | Complete | Precision, Recall, Specificity, F1 per class |
+| **TAB-10** | Empirical Confusion Matrix ($N = 5,837$) | Master Report Section 8.5, Table 8.6 & Notebook | Complete | Full $8 \times 8$ confusion matrix table |
 | **TAB-11** | Multi-Task Benchmark Evaluation | `benchmark_evaluation_report.md` | Complete | Decoupled ABO, Decoupled Rh, Flat 8-way accuracies |

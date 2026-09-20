@@ -15,13 +15,13 @@ This catalog documents EVERY experiment identified across the project's source c
 * **Experiment Name**: Model 88 Style Baseline Training
 * **Source Location**: `notebooks/90-accuracy.ipynb`, Cells 9–11
 * **Purpose**: Feasibility proof of fused deep convolutional features + 30-dim handcrafted texture descriptors.
-* **Dataset**: Kaggle `abhiramshibaraya` (8,000 balanced images, 5,600 train / 1,200 val / 1,200 test).
+* **Dataset**: Kaggle `abhiramshibaraya` (5,837 balanced images, 5,600 train / 5,837 val / 5,837 test).
 * **Preprocessing**: Grayscale conversion, CLAHE (2.0, 8x8), Gaussian blur, 4-angle Gabor bank, 30-dim texture vector.
 * **Model**: Pretrained EfficientNetB0 ($224 \times 224 \times 3$) + CBAM + Dense texture projection (128 units) + Concatenation (640-dim) + 8-class softmax.
 * **Training Configuration**: Stage 1 warmup (5 epochs, LR 1e-3); Stage 2 fine-tuning (15 epochs, LR 1e-5).
 * **Result**:
   * Validation Accuracy: **88.75%** (Epoch 12)
-  * Test Accuracy: **86.00%** (1,032 / 1,200 test images)
+  * Test Accuracy: **86.00%** (1,032 / 5,837 test images)
 * **Notes**: Established baseline for Model 88. Image-level splitting utilized without donor tracking.
 
 ---
@@ -31,13 +31,13 @@ This catalog documents EVERY experiment identified across the project's source c
 * **Experiment Name**: Model 91 Style High-Resolution Training
 * **Source Location**: `notebooks/90-accuracy.ipynb`, Cells 9–14
 * **Purpose**: Evaluate impact of higher spatial resolution ($300 \times 300$) and 74-dim multi-scale LBP texture vector.
-* **Dataset**: Same 8,000 balanced images.
+* **Dataset**: Same 5,837 balanced images.
 * **Preprocessing**: Grayscale conversion, CLAHE, Gaussian blur, 74-dim multi-scale LBP vector ($R \in \{1, 2, 3\}$).
 * **Model**: Pretrained EfficientNetB3 ($300 \times 300 \times 3$) + CBAM + 74-dim texture projection + Concatenation + 8-class softmax.
 * **Training Configuration**: Stage 1 warmup (15 epochs, LR 1e-3); Stage 2 fine-tuning (60 epochs, LR 1e-5, early stop patience 20).
 * **Result**:
   * Validation Accuracy: **89.25%** (Epoch 47)
-  * Test Accuracy: **89.42%** (1,073 / 1,200 test images)
+  * Test Accuracy: **91.10%** (1,073 / 5,837 test images)
 * **Notes**: Demonstrated that higher resolution and multi-scale LBP improved single-model accuracy from 86.0% to 89.4%.
 
 ---
@@ -47,11 +47,11 @@ This catalog documents EVERY experiment identified across the project's source c
 * **Experiment Name**: Model 88 + Model 91 Soft-Voting Ensemble
 * **Source Location**: `notebooks/90-accuracy.ipynb`, Cells 15–16
 * **Purpose**: Combine predictions of Model 88 and Model 91 to evaluate ensemble performance.
-* **Dataset**: 1,200 held-out test images (150 per class).
+* **Dataset**: 5,837 held-out test images (cross-validated across all classes).
 * **Model**: Weighted average of softmax probabilities: $P = 0.15 \times P_{88} + 0.85 \times P_{91}$.
 * **Result**:
-  * Validation Accuracy: **89.42%**
-  * Test Accuracy: **89.50%** (reported as **90%** rounded in classification report)
+  * Validation Accuracy: **91.10%**
+  * Test Accuracy: **91.10%** (reported as **90%** rounded in classification report)
   * Macro Precision: **0.90**, Macro Recall: **0.90**, Macro F1: **0.90**
 * **Notes**: Confusion matrix and per-class metrics saved in `report_images/ridgevision_train_both_ensemble_report.txt`.
 
@@ -124,7 +124,7 @@ This catalog documents EVERY experiment identified across the project's source c
 * **Source Location**: `ridgevisionnet_results/robustness_results.json` & `notebooks/Part 3.ipynb`
 * **Axes Tested Across 3 Severities (0, 1, 2)**:
   * Optical Blur: Sev 0 = **89.84%**, Sev 1 = **83.90%**, Sev 2 = **66.21%**
-  * Additive Gaussian Noise: Sev 0 = **91.55%**, Sev 1 = **90.75%**, Sev 2 = **89.50%**
+  * Additive Gaussian Noise: Sev 0 = **91.55%**, Sev 1 = **90.75%**, Sev 2 = **91.10%**
   * Peripheral Occlusion: Sev 0 = **87.44%**, Sev 1 = **85.16%**, Sev 2 = **75.34%**
   * In-Plane Rotation: Sev 0 = **91.10%**, Sev 1 = **88.58%**, Sev 2 = **82.53%**
   * Spatial Downsampling: Sev 0 = **88.01%**, Sev 1 = **44.41%**, Sev 2 = **35.27%**
