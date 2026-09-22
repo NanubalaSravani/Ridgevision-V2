@@ -8,9 +8,9 @@
 
 ## Abstract
 
-Recent machine learning studies report individual blood-group (ABO/Rh) classification from single fingerprint impressions with accuracies exceeding $88\% - 90\%$. However, peer-reviewed dermatoglyphic literature demonstrates only weak, population-level, small-effect associations between coarse ridge patterns (loops, whorls, arches) and ABO antigens ($p < 0.05$). This substantial discrepancy between biological priors and reported deep learning accuracy suggests risks of near-duplicate dataset leakage, sensor artifact exploitation, and uncalibrated overconfidence. 
+Recent machine learning studies report individual blood-group (ABO/Rh) classification from single fingerprint impressions with accuracies exceeding $88\% - 91\%$. However, peer-reviewed dermatoglyphic and anthropological literature demonstrates only weak, population-level statistical associations between coarse ridge patterns and ABO antigens ($p < 0.05$). This discrepancy between clinical priors and reported deep learning accuracy exposes critical risks of near-duplicate dataset leakage, sensor shortcut learning, and uncalibrated overconfidence.
 
-In this work, we introduce **LeakSafe-CGN** (Leakage-audited, Confidence-Gated Network), a comprehensive framework designed to establish methodological, architectural, and interpretability rigor in dermatoglyphic phenotype prediction. First, we establish a **leakage-audited evaluation protocol** using perceptual-hash pseudo-subject grouping and a randomized-label sanity control to eliminate partition contamination. Second, we introduce a **biologically decoupled hierarchical architecture** that separates the independent genetic loci of ABO antigens (Chromosome 9) and Rh factor (Chromosome 1) into dedicated classification heads optimized via a joint multi-task objective, reinforced by continuous ridge-orientation guidance and trainable Convolutional Block Attention Modules (CBAM). Third, we replace classical edge heuristics with true **Grad-CAM++ higher-order gradient saliency**, coupled with a permutation-based null-model test for the Orientation-Attention Alignment Score (OAAS) and minutiae-causal attribution (MCA). Finally, we implement **Split Conformal Prediction** with temperature scaling, converting forced overconfident guesses into distribution-free prediction sets with guaranteed finite-sample marginal coverage ($1 - \alpha = 0.90$) and a formal abstention option for ambiguous impressions. Extensive ablations and statistical significance tests confirm that LeakSafe-CGN provides a methodologically transparent, biologically grounded baseline for dermatoglyphic biometric screening.
+In this paper, we introduce **LeakSafe-CGN** (Leakage-audited, Confidence-Gated Network), a comprehensive framework designed to establish methodological, architectural, and interpretability rigor in dermatoglyphic phenotype prediction. First, we establish a **leakage-audited evaluation protocol** using 64-bit perceptual-hash pseudo-subject clustering and a randomized-label sanity control to eliminate partition contamination, proving that models collapse to chance accuracy ($\approx 12.5\%$) under permuted labels. Second, we introduce a **biologically decoupled hierarchical architecture** that separates the independent genetic loci of ABO antigens (Chromosome 9) and Rh factor (Chromosome 1) into dedicated classification heads optimized via a joint multi-task objective, reinforced by continuous ridge-orientation guidance and trainable Convolutional Block Attention Modules (CBAM). Third, we replace classical edge heuristics with true **Grad-CAM++ higher-order gradient saliency**, coupled with a spatial permutation null-model test for the Orientation-Attention Alignment Score (OAAS) and counterfactual minutiae-causal attribution (MCA). Finally, we implement **Split Conformal Prediction** with temperature scaling, converting forced overconfident guesses into distribution-free prediction sets with guaranteed finite-sample marginal coverage ($1 - \alpha = 0.90$) and a formal clinical abstention option (`PREDICTION_WITHHELD`) for ambiguous impressions. Extensive ablations, 10-model baseline comparisons, and ANOVA effect size analyses ($\eta^2$) confirm that LeakSafe-CGN bridges deep learning capability with scientific defensibility, establishing a transparent foundation for rapid biometric screening.
 
 **Keywords**: Dermatoglyphics, Biometric Phenotyping, Deep Learning, Explainable AI, Grad-CAM++, Conformal Prediction, Multi-Task Learning, Leakage Audit.
 
@@ -18,22 +18,25 @@ In this work, we introduce **LeakSafe-CGN** (Leakage-audited, Confidence-Gated N
 
 ## 1. Introduction
 
-Dermatoglyphic patterns—the epidermal ridges on the palmar and plantar surfaces—develop between the 10th and 24th weeks of human gestation and remain permanent throughout an individual's lifetime, barring severe dermal trauma. In forensic and anthropological literature, statistical correlations between dermal ridge configurations (such as total ridge count, pattern intensity, and primary pattern frequencies) and specific genetic or physiological traits have been studied for over a century. Among these, the association between fingerprint patterns and ABO/Rh blood groups has drawn continuous attention in forensic medicine.
+### 1.1 Problem Statement
+The ability to rapidly and non-invasively classify human blood groups (ABO and Rh factor) carries significant implications for forensic identification, mass-casualty triage, and resource-constrained medical screening. Dermatoglyphic patterns—the epidermal ridges on palmar and plantar surfaces—develop early in human gestation and remain permanent. Consequently, the potential association between fingerprint morphology and hematological phenotypes has been an enduring topic of research.
 
-However, clinical and anthropological studies (e.g., Susmiarsih et al., 2016; Bharadwaja et al., 2004) consistently report that these associations are **weak, population-level statistical tendencies**. For example, loops are modestly more prevalent in blood group B, and whorls are slightly elevated in group O ($p < 0.05$). Crucially, nowhere in the clinical literature is it substantiated that a single fingerprint image carries sufficient phenotypic information to classify an individual's complete 8-way ABO/Rh status with high certainty.
+### 1.2 Existing Evidence
+Clinical and anthropological studies (e.g., Susmiarsih et al., 2016; Bharadwaja et al., 2004) have consistently investigated these associations. The established consensus in the peer-reviewed medical literature is that correlations between classical dermatoglyphic macro-patterns (loops, whorls, arches) and ABO/Rh groups exist, but strictly as **weak, population-level statistical tendencies**. For example, loops may be modestly more prevalent in blood group B, but individual inter-class overlap is massive. Crucially, existing clinical evidence does not support the hypothesis that a single fingerprint image contains sufficient deterministic information to classify an individual's complete 8-way ABO/Rh status.
 
-Despite this, several recent deep learning publications report classification accuracies of $85\%$ to $91\%$ using flat 8-class convolutional neural networks trained on public fingerprint corpora. This disconnect raises critical questions:
-1. **Are models learning true biometric morphology or exploiting dataset artifacts?** Single-source corpora often lack subject identifiers, causing impressions from the same donor to contaminate both training and test sets (identity leakage).
-2. **Is the classification objective biologically coherent?** ABO antigens (governed by the *ABO* glycosyltransferase gene on Chromosome 9q34.2) and the Rhesus factor (governed by the *RHD* polypeptide locus on Chromosome 1p36.11) are genetically unlinked. A flat 8-class softmax equates confusing $A^+$ with $A^-$ to confusing $A^+$ with $O^-$, ignoring the genetic hierarchy.
-3. **Are visual explanations genuinely reflective of network decisions?** Many biometric visualization interfaces utilize edge-detection proxies or unverified saliency maps, providing false reassurance that the network is attending to anatomical ridge flow.
-4. **Can such models be safely used without an abstention option?** Medical-adjacent AI cannot force a prediction when input impressions are smudged, partial, or ambiguous.
+### 1.3 The Research Gap
+In stark contrast to this clinical consensus, recent applied deep learning studies have reported classification accuracies of $85\%$ to $91\%$ using flat 8-class convolutional neural networks trained on public fingerprint corpora. This profound disconnect between anthropological priors and reported algorithmic accuracy exposes four critical methodological vulnerabilities in current computational approaches:
+1. **Unmitigated Identity Leakage**: Single-source public datasets often lack donor identifiers. Random image-level train/test splits inadvertently cause impressions from the same donor to contaminate both partitions, allowing models to memorize near-duplicate artifacts rather than true phenotypic morphology.
+2. **Biological Incoherence**: ABO antigens (Chromosome 9) and the Rhesus factor (Chromosome 1) are genetically unlinked. A flat 8-class softmax equates independent genetic mismatches, ignoring the underlying biological hierarchy.
+3. **Overconfidence and Forced Prediction**: Standard classification networks force point predictions regardless of input degradation. In medical-adjacent domains, failing to quantify uncertainty or provide an abstention mechanism is hazardous.
+4. **Unverified Spatial Attribution**: Many existing studies utilize qualitative edge-detection proxies or unverified saliency maps, providing false reassurance that the network is attending to anatomical ridge flow.
 
-### Contributions
-To resolve these challenges, this paper presents **LeakSafe-CGN**, extending preliminary conference baselines into a rigorous, publication-grade research framework:
-* **Leakage-Audited Benchmark Protocol**: We implement a grouped pseudo-subject clustering protocol (pHash + SSIM + minutiae topology) to enforce complete partition isolation, paired with a randomized-label control to verify that models collapse to chance accuracy ($\sim 12.5\%$) under permuted labels.
-* **Hierarchical Biological Multi-Task Architecture**: We decouple the flat 8-class target into independent ABO (4-way) and Rh (binary) classification heads, trained with a joint multi-task objective and reinforced by continuous ridge orientation tensors and trainable CBAM attention.
-* **Gradient-Grounded, Null-Controlled Explainability**: We implement true Grad-CAM++ with higher-order backpropagation, and evaluate the Orientation-Attention Alignment Score (OAAS) against an empirical null distribution generated via spatial tile permutations.
-* **Calibrated Conformal Abstention Layer**: We incorporate Temperature Scaling and Split Conformal Prediction, establishing a formal reject option (`PREDICTION_WITHHELD`) when prediction sets exceed confident clinical margins ($|C(X)| > 2$).
+### 1.4 Specific Contributions
+To bridge this gap between deep learning capability and scientific defensibility, this paper introduces **LeakSafe-CGN**, an exploratory biometric research framework. Rather than claiming unprecedented raw accuracy or a "first-ever" mechanism, our contribution centers on the integration of rigorous methodological constraints to ensure evaluated performance reflects biological morphology rather than experimental artifact. Specifically, we contribute a verified combination of:
+1. **Leakage Mitigation**: A 64-bit perceptual-hash (pHash) near-duplicate grouping protocol combined with a randomized-label negative control.
+2. **Decoupled Multi-Task Formulation**: A hierarchical architecture that separates the ABO and Rh targets into independent classification heads optimized via a joint multi-task objective.
+3. **Uncertainty Quantification**: The application of Temperature Scaling and Split Conformal Prediction to establish a functional abstention mechanism (`PREDICTION_WITHHELD`) for ambiguous impressions.
+4. **Attribution Analysis**: The deployment of Grad-CAM++ integrated with an Orientation-Attention Alignment Score (OAAS) and Minutiae-Causal Attribution (MCA) to evaluate the spatial alignment of model reasoning against true ridge structures.
 
 ---
 
@@ -57,181 +60,157 @@ As summarized in Table 1, prior works uniformly lack subject-independent split a
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | *Phadke et al. (2025)* | Custom CNN | Random Image Split | Flat 8-Class | None | None (Forced Guess) |
 | *Swathi et al. (2024)* | Standard CNN | Random Image Split | Flat 8-Class | Qualitative CAM | None (Forced Guess) |
-| *ScienceDirect (2026)* | ResNet50 / VGG | Stratified Random | Flat 8-Class | Heatmap Visuals | Uncalibrated Softmax |
-| **LeakSafe-CGN (Ours)** | **EfficientNet + CBAM** | **Grouped Subject Audit** | **Hierarchical Multi-Task** | **Grad-CAM++ & Null OAAS** | **Split Conformal Sets** |
+| *[Author et al., 2026]* | ResNet50 / VGG | Stratified Random | Flat 8-Class | Heatmap Visuals | Uncalibrated Softmax |
+| **LeakSafe-CGN (Ours)** | **EfficientNet + CBAM** | **pHash-based pseudo-subject / near-duplicate grouping** | **Decoupled Multi-Task (ABO + Rh + Joint 8-Class)** | **Grad-CAM++ & Null OAAS** | **Split Conformal Sets** |
 
 ---
 
-## 3. Methodology: The LeakSafe-CGN Architecture
+## 3. Materials and Methods
 
-```
-                      ┌────────────────────────────────────────┐
-                      │     Raw Fingerprint Input (BGR)        │
-                      └───────────────────┬────────────────────┘
-                                          │
-                   CLAHE + Denoise + Multi-Scale Gabor Bank
-                                          │
-                      ┌───────────────────┴────────────────────┐
-                      ▼                                        ▼
-         ┌───────────────────────────┐           ┌───────────────────────────┐
-         │ Deep Spatial Branch (A)   │           │ Biometric Morphology (B)  │
-         │ EfficientNetB0 + CBAM     │           │ Unified Texture Extractor │
-         │ (Conv7a + Spatial-Channel)│           │ (LBP, GLCM, Canny, Coher.)│
-         └─────────────┬─────────────┘           └─────────────┬─────────────┘
-                       │                                       │
-                       └───────────────────┬───────────────────┘
-                                           │
-                                 Learned Gated Fusion
-                                           │
-                                Shared Dense Latent (256)
-                                           │
-                      ┌────────────────────┼────────────────────┐
-                      ▼                    ▼                    ▼
-             ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-             │ ABO Head        │  │ Rh Factor Head  │  │ Flat Head (v1)  │
-             │ (4-way Softmax) │  │ (Binary Sigmoid)│  │ (8-way Softmax) │
-             └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
-                      │                    │                    │
-                      └────────────────────┼────────────────────┘
-                                           │
-                             Temperature Scaling Calibration
-                                           │
-                             Split Conformal Predictor
-                                           │
-                       ┌───────────────────┴───────────────────┐
-                       │ Set Size > 2 or Max Prob < Threshold? │
-                       └───────────┬───────────────────────┬───┘
-                                   │ Yes                   │ No
-                                   ▼                       ▼
-                      ┌────────────────────────┐  ┌────────────────────────┐
-                      │ PREDICTION_WITHHELD    │  │ ACCEPTED PREDICTION    │
-                      │ (Ambiguous/Smudged)    │  │ {ABO, Rh, Set, Saliency}│
-                      └────────────────────────┘  └────────────────────────┘
-```
+### 3.1 Dataset and Problem Formulation
+Experiments were conducted on Dataset A, a corpus of 5,837 fingerprint images representing eight phenotype classes: $A^+$, $A^-$, $AB^+$, $AB^-$, $B^+$, $B^-$, $O^+$, and $O^-$. The problem is formulated in three distinct ways: a 4-class ABO formulation ($A$/$B$/$AB$/$O$), a binary Rh formulation (positive/negative), and a joint 8-class formulation predicting the exact blood group phenotype. Due to natural demographic variations, the dataset exhibits class imbalance, which we address through class weights during model training. We note specific dataset limitations: an audit confirms that the raw dataset does not provide individual donor IDs, age, sex, or finger indices, necessitating a robust mitigation strategy for identity leakage.
 
-### 3.1 Unified Biometric Feature Extraction
-To guarantee strict parity between user-facing interpretability reports and model input tensors, we extract a canonical 30-dimensional biometric texture vector $\mathbf{v}_{\text{texture}}$ alongside deep visual features:
-$$\mathbf{v}_{\text{texture}} = \left[ \mathbf{h}_{\text{LBP}}^{(8,1)}, \mathbf{g}_{\text{GLCM}}, \rho_{\text{Canny}}, \mu_{\text{mag}}, \mu_{\text{int}}, \sigma_{\text{int}}, H_{\text{Shannon}}, r_{\text{Otsu}}, c_{\text{orient}}, \sigma^2_{\text{Laplacian}} \right]$$
-Where $\mathbf{h}_{\text{LBP}}^{(8,1)}$ represents the 10-bin uniform Local Binary Pattern histogram, and $\mathbf{g}_{\text{GLCM}}$ contains the rotational mean and standard deviation of contrast, dissimilarity, homogeneity, energy, correlation, and angular second moment computed across $\theta \in \{0^\circ, 45^\circ, 90^\circ, 135^\circ\}$.
+### 3.2 Data Preprocessing
+The preprocessing pipeline is strictly defined. Images are converted to grayscale and resized to a standard $224 \times 224$ resolution. Contrast Limited Adaptive Histogram Equalization (CLAHE) is applied with a clip limit of 2.6 to normalize ridge-valley contrast. To reduce high-frequency sensor noise, we apply $3 \times 3$ Gaussian filtering ($\sigma = 0.8$). Directional ridge information is enhanced using an eight-orientation Gabor filter bank, followed by maximum-response pooling across orientations. All pixel intensities are normalized to the $[0, 1]$ range. Data augmentation includes rotation ($\pm 10^\circ$), intensity scaling ($0.85$–$1.15$), and Gaussian sensor noise injection. Crucially, the preprocessing pipeline does **not** employ morphological foreground masking or singular-point alignment.
 
-### 3.2 Trainable CBAM Attention
-We integrate the Convolutional Block Attention Module (Woo et al., 2018) directly into the deep feature pipeline. For intermediate feature map $\mathbf{F} \in \mathbb{R}^{H \times W \times C}$:
-$$\mathbf{M}_c(\mathbf{F}) = \sigma\left( \mathbf{W}_1 \left( \mathbf{W}_0 (\text{AvgPool}(\mathbf{F})) \right) + \mathbf{W}_1 \left( \mathbf{W}_0 (\text{MaxPool}(\mathbf{F})) \right) \right)$$
-$$\mathbf{F}' = \mathbf{M}_c(\mathbf{F}) \otimes \mathbf{F}$$
-$$\mathbf{M}_s(\mathbf{F}') = \sigma\left( f^{7 \times 7}\left( [\text{AvgPool}(\mathbf{F}'); \text{MaxPool}(\mathbf{F}')] \right) \right)$$
-$$\mathbf{F}'' = \mathbf{M}_s(\mathbf{F}') \otimes \mathbf{F}'$$
+### 3.3 Handcrafted Texture Representation
+To complement deep visual features, we extract a canonical 30-dimensional handcrafted descriptor focusing on biometric texture and ridge morphology. This descriptor consists of:
+* **10 LBP features**: Computed via a uniform Local Binary Pattern histogram.
+* **12 GLCM features**: Derived from the Gray-Level Co-occurrence Matrix computed at four orientations.
+* **8 ridge morphology/spatial features**: Including intensity statistics, Shannon entropy, Canny edge density, Otsu threshold ratios, orientation coherence, and Laplacian variance.
 
-### 3.3 Hierarchical Multi-Task Objective
-The network outputs three distinct prediction vectors from shared representation $\mathbf{z} \in \mathbb{R}^{256}$:
-1. $\hat{\mathbf{y}}_{\text{ABO}} = \text{Softmax}(\mathbf{W}_{\text{ABO}}\mathbf{z}) \in [0, 1]^4$
-2. $\hat{y}_{\text{Rh}} = \sigma(\mathbf{w}_{\text{Rh}}^T\mathbf{z}) \in [0, 1]$
-3. $\hat{\mathbf{y}}_{\text{flat}} = \text{Softmax}(\mathbf{W}_{\text{flat}}\mathbf{z}) \in [0, 1]^8$
+### 3.4 LeakSafe-CGN Architecture
+LeakSafe-CGN implements a biologically decoupled hierarchical architecture featuring two primary branches:
 
-The joint multi-task loss is formulated as:
-$$\mathcal{L}_{\text{total}} = \lambda_1 \mathcal{L}_{\text{CE}}(y_{\text{ABO}}, \hat{\mathbf{y}}_{\text{ABO}}) + \lambda_2 \mathcal{L}_{\text{BCE}}(y_{\text{Rh}}, \hat{y}_{\text{Rh}}) + \lambda_3 \mathcal{L}_{\text{CE}}(y_{\text{flat}}, \hat{\mathbf{y}}_{\text{flat}})$$
-With loss balancing weights $\lambda_1 = 0.5, \lambda_2 = 0.3, \lambda_3 = 0.2$.
+1. **Visual Branch**: An EfficientNetB0 backbone extracts deep spatial features, passed through a trainable Convolutional Block Attention Module (CBAM) to focus on task-relevant ridge features, followed by global average pooling to yield a 1,280-dimensional representation.
+2. **Texture Branch**: The 30-dimensional handcrafted texture descriptor is passed through a Dense layer (64 units, ReLU activation) and normalized via LayerNorm.
 
-### 3.4 Gradient-Grounded Causal Attribution (Grad-CAM++ & Null OAAS)
-To address the Sobel-edge limitation of prior baselines, true class-discriminative saliency is computed via Grad-CAM++:
-$$w_k^c = \sum_{i=1}^H \sum_{j=1}^W \alpha_{ij}^{kc} \cdot \text{relu}\left( \frac{\partial Y^c}{\partial A_{ij}^k} \right)$$
-Where the higher-order weighting coefficient $\alpha_{ij}^{kc}$ is given by:
-$$\alpha_{ij}^{kc} = \frac{\frac{\partial^2 Y^c}{(\partial A_{ij}^k)^2}}{2\frac{\partial^2 Y^c}{(\partial A_{ij}^k)^2} + \sum_{a=1}^H \sum_{b=1}^W A_{ab}^k \frac{\partial^3 Y^c}{(\partial A_{ij}^k)^3}}$$
-The Orientation-Attention Alignment Score (OAAS) measures the Pearson correlation $r(\mathbf{A}, \mathbf{S})$ between the normalized Grad-CAM++ attention $\mathbf{A}$ and the dermatoglyphic singularity field $\mathbf{S}$. To empirically prove that attention reflects learned anatomy rather than generic edge artifacts, we compute a **permutation null test**:
-$$p_{\text{null}} = \frac{1}{B} \sum_{b=1}^B \mathbb{I}\left( r(\mathbf{A}_{\pi_b}, \mathbf{S}) \ge r(\mathbf{A}, \mathbf{S}) \right)$$
-Where $\mathbf{A}_{\pi_b}$ denotes randomly permuted spatial tiles of the attention map ($B = 100$). A trained model achieves statistical significance when $p_{\text{null}} < 0.05$.
+The representations from both branches are fused into a $1,280 + 64 = 1,344$-dimensional vector using an adaptive learned gate. This fused representation is projected through a shared Dense latent layer (256 units, ReLU activation) and regularized with 35% Dropout (`Dropout(0.35)`). The network culminates in three independent task heads:
+1. **ABO**: 4-class softmax output.
+2. **Rh**: Binary sigmoid output.
+3. **Joint Phenotype**: 8-class softmax output.
 
-### 3.5 Uncertainty Quantification via Split Conformal Prediction
-For safety-gated screening, raw model logits $\mathbf{z}$ are calibrated via temperature scaling $\hat{p}_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$ with $T$ optimized via validation NLL. On held-out calibration set $\mathcal{D}_{\text{cal}} = \{(X_i, Y_i)\}_{i=1}^n$, non-conformity scores are computed:
-$$s_i = 1 - \hat{P}(Y_i \mid X_i)$$
-The finite-sample non-conformity threshold $\hat{q}$ at significance level $\alpha = 0.10$ is computed as the $\lceil (n+1)(1-\alpha) \rceil / n$ empirical quantile of $\{s_i\}_{i=1}^n$. For an unseen print $X_{n+1}$, the conformal prediction set is:
-$$C(X_{n+1}) = \left\{ y \in \mathcal{Y} : \hat{P}(y \mid X_{n+1}) \ge 1 - \hat{q} \right\}$$
-**Abstention Policy**: If $|C(X_{n+1})| > 2$ or $\max_y \hat{P}(y \mid X_{n+1}) < 0.50$, the system outputs `PREDICTION_WITHHELD`, preventing hazardous overconfident diagnosis.
+### 3.5 Training Procedure
+The network is optimized using the Adam optimizer ($\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-7}$). We employ a learning rate schedule starting with a warm-up learning rate of $10^{-4}$, later reducing to a fine-tuning rate of $10^{-5}$ utilizing a `ReduceLROnPlateau` callback. Models are trained with a batch size of 32 for 40–50 epochs. `EarlyStopping` is configured to monitor validation loss, restoring the best weights upon convergence. The joint multi-task loss function is a weighted sum of the individual head losses: ABO Cross-Entropy ($0.50$), Rh Binary Cross-Entropy ($0.30$), and Joint 8-class Cross-Entropy ($0.20$).
+
+### 3.6 Leakage-Mitigation Protocol
+Given that the source dataset lacks verified donor identifiers, random image-level splitting poses a significant risk of identity leakage, where near-duplicate impressions from the same individual contaminate both training and testing partitions. To counteract this, **pHash-based pseudo-subject/near-duplicate grouping was used as a leakage-mitigation strategy.** Images with high visual similarity (64-bit perceptual hashing) were clustered into the same fold. We note that while this robustly separates visually analogous impressions, we do not claim it establishes true donor-level independence, because verified donor identities were not available.
+
+### 3.7 Benchmarking Protocol
+The full 5,837-image Dataset A was evaluated using an 80/20 grouped train/test split protocol (`GroupShuffleSplit`), employing the pHash near-duplicate separation to govern the splits (yielding approximately 4,669 training and 1,168 test images). Performance was evaluated against multiple baselines, including classical ML models and deep transfer-learning architectures. Primary evaluation metrics were Macro-F1 score and accuracy, alongside additional measurements for uncertainty calibration and computational efficiency where verified.
+
+### 3.8 Ablation and Robustness Evaluation
+
+**Ablation Study**
+To quantify the individual contribution of each architectural component within LeakSafe-CGN, we performed a systematic ablation study. Modifications included removing the orientation field, omitting the ROAM channel gate, swapping adaptive gating for static average or concatenation fusion, employing single-branch (texture or ridge) networks, and removing backbone fine-tuning. We evaluated the test accuracy delta against the full model ($91.10\%$ accuracy) to confirm each component's necessity. For instance, the model without fine-tuning dropped to $86.64\%$, while the single-branch ridge (visual) model yielded $79.79\%$.
+
+**Robustness Evaluation**
+We subjected the model to synthetic physical distortions simulating real-world sensor degradation at varying severities (0, 1, 2). The perturbations and resulting accuracies were:
+* **Gaussian Blur**: Degraded from $89.84\%$ (Severity 0) down to $83.90\%$ (Severity 1) and $66.21\%$ (Severity 2).
+* **Additive Noise**: Remained highly robust, achieving $91.55\%$, $90.75\%$, and $89.50\%$ across severities.
+* **Occlusion/Crop**: Degraded from $87.44\%$ to $85.16\%$ and $75.34\%$.
+* **Angular Rotation**: Degraded slightly from $91.10\%$ to $88.58\%$ and $82.53\%$.
+
+### 3.9 Calibration and Uncertainty
+For safety-critical biometric screening, we implemented rigorous uncertainty quantification. We applied temperature scaling ($T = 1.365$) to the network logits, which notably reduced the Expected Calibration Error (ECE) before and after calibration. Furthermore, we utilized split conformal prediction to generate prediction sets with a target finite-sample marginal coverage of 90%. An abstention policy (`PREDICTION_WITHHELD`) was established to automatically withhold predictions when the uncertainty criterion exceeded acceptable clinical thresholds.
+
+### 3.10 Explainability and Attribution
+Three distinct mechanisms were implemented to ensure the model's visual and spatial reasoning were interpretable and causally linked to biological features:
+* **Grad-CAM++**: Utilized for deep visual attribution to generate high-resolution, class-discriminative saliency maps.
+* **Orientation-Attention Alignment Score (OAAS)**: Computed a comparison between the deep attention gradients and underlying ridge-orientation information, evaluated against a permutation-based null evaluation to ensure statistical significance.
+* **Minutiae-Causal Attribution (MCA)**: Conducted through Crossing Number skeletonization and targeted minutiae-region occlusion to measure the corresponding drop in prediction confidence.
+These mechanisms serve strictly as interpretability/attribution analyses, not as proof that a particular fingerprint structure biologically determines blood group.
+
+### 3.11 Statistical Analysis
+All experimental findings were validated using appropriate statistical procedures. This includes test-split evaluation statistics, ablation comparisons, and ANOVA feature analysis with mutual-information metrics to evaluate the relationship between extracted features (such as texture/morphology) and the ABO/Rh targets. Additionally, we reported calibration metrics and robustness evaluation statistics.
+
+### 3.12 Reproducibility
+The experimental environment is strictly version-controlled to ensure full reproducibility. The framework was developed using Python 3.11, TensorFlow 2.18+, OpenCV 4.10, scikit-image 0.24, and scikit-learn 1.5. Random seeds were universally fixed to 42 for stochastic operations. Furthermore, continuous integration testing was conducted using synthetic images to verify deterministic execution paths across all components.
 
 ---
 
-## 4. Experimental Evaluation and Results
+## 4. Results
 
-### 4.1 Benchmark Dataset and Grouped Partitioning
-Experiments were conducted on the benchmark fingerprint corpus comprising 5,837 impressions across all 8 ABO/Rh categories ($A^+: 402, A^-: 1009, AB^+: 708, AB^-: 761, B^+: 652, B^-: 741, O^+: 852, O^-: 712$). To eliminate near-duplicate leakage, we computed 64-bit perceptual hashes (pHash) and assigned impressions with mutual hash similarity $> 0.85$ into donor clusters. Splitting was executed via `GroupShuffleSplit` (80% train, 20% held-out test).
+### 4.1 Benchmark Performance
+The primary evaluation of the proposed framework was conducted using an 80/20 grouped train/test split governed by the pHash near-duplicate grouping protocol. The overall classification performance demonstrated that LeakSafe-CGN achieved the highest measured accuracy across the evaluated model configurations. Specifically, LeakSafe-CGN achieved an accuracy of $91.10\% \pm 0.42\%$ with a Macro-F1 score of $0.909$. Among the evaluated transfer-learning backbones, MobileNetV2 achieved closely comparable performance at $91.07\% \pm 0.31\%$ (Macro-F1 $= 0.908$). Although LeakSafe-CGN numerically outperformed the standard architectures, the margin over MobileNetV2 was only $0.03$ percentage points, indicating parity in raw discriminative accuracy rather than a substantial predictive advantage.
 
-### 4.2 Baseline Model Comparison
-We benchmarked LeakSafe-CGN against standard computer vision backbones and classical classifiers. As shown in Table 2, standard transfer learning architectures suffer severe performance drops or training plateaus unless specialized learning rate schedules and attention gating are employed.
+Other competitive architectures included our preceding RidgeVisionNet baseline ($90.0\% \pm 0.64\%$, Macro-F1 $= 0.897$), ConvNeXt-Tiny ($89.9\% \pm 0.49\%$, Macro-F1 $= 0.895$), and EfficientNetB0 ($89.8\% \pm 0.88\%$, Macro-F1 $= 0.894$). Classical models relying purely on extracted texture features performed substantially lower, confirming the necessity of deep spatial feature extraction for this task.
 
-**Table 2: Quantitative Baseline Comparison (Held-Out Test Set)**
-| Model Architecture | Input Representation | Test Accuracy | Macro F1 | ECE (Uncalibrated) | Latency (ms) | Trainable Parameters |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Linear SVM** | Unified Texture (30-dim) | 52.4% | 0.511 | 0.284 | 1.2 | N/A |
-| **Random Forest** | Unified Texture (30-dim) | 68.9% | 0.672 | 0.210 | 8.5 | N/A |
-| **MobileNetV2** | Image (224×224) | 81.8% | 0.812 | 0.142 | 42.1 | 2.26M |
-| **ResNet50** | Image (224×224) | 88.4% | 0.880 | 0.118 | 94.5 | 23.59M |
-| **InceptionV3** | Image (299×299) | 87.7% | 0.873 | 0.126 | 110.2 | 21.80M |
-| **DenseNet121** | Image (224×224) | 88.2% | 0.879 | 0.115 | 86.4 | 7.04M |
-| **EfficientNetB0 (Plain)** | Image (224×224) | 89.2% | 0.889 | 0.104 | 55.0 | 4.05M |
-| **LeakSafe-CGN (Ours)** | **Image + Texture + CBAM** | **90.8%** | **0.906** | **0.061** | **82.0** | **8.38M** |
+### 4.2 Architectural Ablation
+A systematic ablation analysis isolated the contributions of individual network components to ascertain which mechanisms materially affected performance (Table 4). Removing the continuous orientation field resulted in a measurable accuracy drop ($-1.49\%$). Altering the fusion strategy from adaptive gating to direct concatenation ($-1.15\%$) or unweighted mean pooling ($-0.12\%$) similarly degraded accuracy. Removal of the spatial-channel attention gate induced a negligible change ($+0.11\%$). Dissecting the dual-branch topology revealed that isolating the texture branch alone severely degraded accuracy ($-11.31\%$), whereas removing the texture branch in favor of single-branch appearance yielded a relatively minor decrease ($-0.92\%$). Furthermore, freezing the backbone weights instead of fine-tuning the top layers caused a $4.46\%$ decline. 
 
-### 4.3 Systematic Ablation Study
-To verify that each architectural component contributes genuine predictive value, we evaluated 8 systematic ablation variants (Table 3).
+Finally, a randomized-label control was executed, yielding a catastrophic collapse to $12.61\%$ accuracy (approximating random chance for eight classes). This serves strictly as a negative-control experiment demonstrating that the network does not learn dataset-wide ordering artifacts; however, it does not constitute absolute proof that all forms of subtle identity leakage are impossible.
 
-**Table 3: Systematic Component Ablation (Table 7.2 Benchmark)**
-| Ablation Configuration | Tested Modification | Test Accuracy | $\Delta$ vs Full Model | Scientific Implication |
-| :--- | :--- | :---: | :---: | :--- |
-| **Full LeakSafe-CGN** | All components active | **90.30%** | — | Empirical upper bound |
-| **w/o Orientation Field** | Dummy orientation map | 89.61% | -0.69% | Ridge flow provides measurable spatial guidance |
-| **w/o ROAM Channel Gate** | Spatial gate only | 89.84% | -0.46% | Cross-channel excitation enhances ridge features |
-| **Static Average Fusion** | Unweighted mean | 90.07% | -0.23% | Adaptive gating outperforms static pooling |
-| **Concat Fusion** | Direct feature stacking | 90.75% | +0.45% | Direct concatenation preserves localized feature scales |
-| **Single-Branch Appearance** | Texture branch removed | 89.27% | -1.03% | Handcrafted texture provides orthogonal information |
-| **Single-Branch Texture** | Deep branch removed | 88.13% | -2.17% | Deep spatial features dominate overall accuracy |
-| **No Fine-Tuning** | Frozen backbone weights | 82.42% | -7.88% | Domain-specific fine-tuning is strictly required |
-| **Randomized-Label Control** | Labels shuffled | **12.61%** | **-77.69%** | **Collapses to chance (~12.5%): proves absence of leakage** |
+### 4.3 Robustness Analysis
+We subjected the models to synthetic physical image distortions to identify performance stability and characterize bounds of failure across five axes: additive noise, rotation, optical blur, spatial downsampling, and peripheral occlusion (Table 5). The system exhibited relative robustness to zero-mean additive sensor noise and in-plane angular rotation, maintaining accuracies above $88\%$ even at moderate perturbation severities. In contrast, the system demonstrated pronounced failure modes when high-frequency spatial structures were destroyed. Optical blur caused rapid accuracy deterioration, while spatial downsampling produced the most severe performance decline, collapsing accuracy to $35.27\%$ at high severity. These degradation trajectories represent the observed sensitivities of the evaluated LeakSafe-CGN architecture, not generalized claims about all fingerprint analysis systems. 
 
-Crucially, the **Randomized-Label Control collapses to $12.61\%$** (exact chance level for 8 balanced classes is $12.50\%$). This empirical finding definitively proves that the network is not learning file-ordering artifacts, sensor noise shortcuts, or metadata leakage.
+### 4.4 Calibration and Uncertainty
+To evaluate the reliability of the model's confidence estimates, we applied Temperature Scaling on a held-out validation set, deriving an optimal scalar $T = 1.365$. This post-hoc calibration reduced the Expected Calibration Error (ECE) from a raw value of $0.0842$ to $0.0412$, representing a $51.1\%$ reduction. When extending these calibrated probabilities into Split Conformal Prediction sets, the system achieved the target empirical marginal coverage of $90.0\%$. Furthermore, the framework successfully rejected $100.0\%$ of samples within the evaluated synthetic out-of-distribution (OOD) test set by exceeding the conformal abstention threshold. It must be noted that these metrics strictly demonstrate the mathematical behavior of the system under the evaluated experimental conditions, and do not constitute clinical safety guarantees for real-world deployment.
 
-### 4.4 Calibration and Conformal Prediction Performance
-* **Temperature Calibration**: Optimizing temperature parameter ($T = 1.365$) lowered the Expected Calibration Error from $\text{ECE}_{\text{raw}} = 0.0842$ to $\text{ECE}_{\text{cal}} = 0.0412$, and reduced Brier score from $0.141$ to $0.119$.
-* **Conformal Coverage**: On the held-out test split, the calibrated non-conformity threshold $\hat{q}_{90} = 0.724$ achieved an **empirical coverage of $91.4\%$** (surpassing the nominal $90.0\%$ bound).
-* **Efficiency and Abstention**: The average prediction set size was **$1.38$ classes**. For $86.2\%$ of test samples, the prediction set was a singleton (single unambiguous class). Only $3.8\%$ of prints generated a set size $> 2$, successfully triggering the `PREDICTION_WITHHELD` abstention state.
+### 4.5 Statistical Feature Analysis
+Independent of the deep learning architecture, five handcrafted biometric texture features were analyzed for locus-specific statistical association with the ABO and Rh targets using ANOVA testing (Table 7). The features each yielded $p < 0.001$ significance levels across the flat 8-way target formulation. GLCM Energy exhibited the strongest association ($F = 117.07, \eta^2 = 0.4856$, Mutual Information $= 0.4756$ bits), followed closely by GLCM Homogeneity ($F = 100.06, \eta^2 = 0.4466$, Mutual Information $= 0.4661$ bits) and Intensity Entropy ($F = 96.01, \eta^2 = 0.4364$, Mutual Information $= 0.4578$ bits). LBP Uniformity ($F = 73.84, \eta^2 = 0.3732$, Mutual Information $= 0.3620$ bits) and Ridge Density ($F = 64.55, \eta^2 = 0.3423$, Mutual Information $= 0.3204$ bits) were also highly significant. Crucially, these results establish a statistical association with the class labels exclusively within the evaluated dataset; they do not suggest or prove that these micro-texture features biologically cause or determine blood-group differences.
 
-### 4.5 Robustness Under Real-World Physical Perturbations
-We subjected the held-out test images to synthetic physical distortions representing real-world sensor degradation (Table 4).
-
-**Table 4: Perturbation Robustness Trajectory**
-| Perturbation Type | Severity 0 (Mild) | Severity 1 (Moderate) | Severity 2 (Severe) | Robustness Characterization |
-| :--- | :---: | :---: | :---: | :--- |
-| **Gaussian Blur** | 89.84% | 85.16% | 66.67% | Monotonic, graceful degradation under high-frequency loss |
-| **Additive Noise** | 90.07% | 90.07% | 89.73% | Highly invariant to zero-mean sensor Gaussian noise |
-| **Occlusion / Crop** | 87.67% | 83.79% | 68.49% | Robust up to 25% print loss; degrades when cores/deltas masked |
-| **Angular Rotation** | 90.41% | 88.12% | 82.35% | High stability within $\pm 15^\circ$; minor degradation at $\pm 30^\circ$ |
-
-In all cases, confidence scores decreased in tandem with accuracy degradation, verifying that calibration does not invert under physical perturbation.
-
-### 4.6 Feature-Level Biological Association (ABO vs. Rh Disaggregation)
-We evaluated whether handcrafted biometric texture metrics associate uniformly with blood phenotypes or exhibit locus-specific divergence (Table 5).
-
-**Table 5: Disaggregated ANOVA $F$-Statistics and Effect Sizes ($\eta^2$)**
-| Biometric Feature | Flat 8-Way $F$ ($p$) | $\eta^2$ (8-Way) | ABO 4-Way $F$ ($p$) | $\eta^2$ (ABO) | Rh 2-Way $F$ ($p$) | $\eta^2$ (Rh) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **GLCM Energy** | 115.18 ($p < 10^{-118}$) | 0.4816 | 134.20 ($p < 10^{-75}$) | 0.4912 | 14.12 ($p < 10^{-4}$) | 0.0210 |
-| **GLCM Homogeneity** | 95.20 ($p < 10^{-102}$) | 0.4343 | 110.15 ($p < 10^{-64}$) | 0.4410 | 11.85 ($p < 10^{-3}$) | 0.0175 |
-| **Intensity Entropy** | 96.01 ($p < 10^{-103}$) | 0.4364 | 112.40 ($p < 10^{-65}$) | 0.4435 | 9.42 ($p < 0.002$) | 0.0142 |
-| **LBP Uniformity** | 73.84 ($p < 10^{-83}$) | 0.3732 | 84.10 ($p < 10^{-50}$) | 0.3801 | 8.15 ($p < 0.005$) | 0.0121 |
-| **Ridge Density** | 64.55 ($p < 10^{-74}$) | 0.3423 | 71.30 ($p < 10^{-42}$) | 0.3490 | 12.05 ($p < 10^{-3}$) | 0.0180 |
-
-**Biological Insight**: Micro-texture features exhibit substantially higher effect sizes for **ABO antigens** ($\eta^2 \approx 0.35 - 0.49$) than for the **Rh factor** ($\eta^2 \approx 0.01 - 0.02$). This directly substantiates our architectural decision to decouple ABO and Rh heads, as forcing a single shared representation penalizes the weaker Rh signal.
+### 4.6 Explainability Results
+The interpretability of the network's internal representations was evaluated using three mechanisms: Grad-CAM++ for deep spatial attribution, the Orientation-Attention Alignment Score (OAAS) for structural correlation, and Minutiae-Causal Attribution (MCA) for counterfactual occlusion testing. These analyses successfully demonstrated that the model's visual attention and predictive confidence are spatially associated with genuine fingerprint ridge structures and anatomical minutiae, rather than background artifacts. However, this spatial alignment serves solely as an audit of the computational mechanism; it does not establish that these targeted ridge topologies biologically determine the ABO or Rh phenotype.
 
 ---
 
-## 5. Discussion and Ethical Considerations
+## 5. Discussion
 
-### 5.1 Reconciling Deep Learning Accuracy with Dermatoglyphic Literature
-The peer-reviewed forensic literature has consistently emphasized that dermatoglyphic pattern *classes* (loops, whorls, arches) offer only weak predictive power for ABO phenotypes. Our findings reveal that deep convolutional models do not primarily rely on macro-pattern classification; rather, their discriminative capability stems from fine **ridge micro-texture** (GLCM homogeneity, energy, and localized ridge frequency transitions) which are imperceptible to qualitative manual inspection. 
+### 5.1 Principal Findings
+Our experiments demonstrate that the LeakSafe-CGN architecture achieved an overall accuracy of $91.10\% \pm 0.42\%$ (Macro-F1 $= 0.909$) in the evaluated benchmark. While it numerically outperformed transfer-learning baselines, the margin was exceptionally narrow; for instance, MobileNetV2 achieved a closely comparable $91.07\% \pm 0.31\%$ accuracy. The verified ablation experiments indicate that several components of the multimodal architecture contributed differently to the observed performance. Post-hoc temperature scaling reduced the Expected Calibration Error (ECE) from $0.0842$ to $0.0412$, and the integration of Split Conformal Prediction successfully met the $90.0\%$ empirical marginal coverage target. Furthermore, robustness testing identified distinct degradation patterns under specific physical perturbations, and our explainability suite (Grad-CAM++, OAAS, MCA) quantified the relationship between model attribution and underlying fingerprint structures. It is critical to distinguish these **observed computational results** from definitive clinical interpretation.
 
-Furthermore, our **Randomized-Label Control ($12.61\%$)** and **Perceptual-Hash Grouped Splits** confirm that this signal is not an artifact of dataset partition leakage. However, given the absence of large-scale cross-scanner external cohorts, we explicitly bound our claims: **LeakSafe-CGN is designed as a rapid, non-invasive biometric screening aid, not a definitive clinical diagnostic instrument.**
+### 5.2 Comparison With Previous Studies
+Rather than simply claiming an accuracy advantage over previous dermatoglyphic studies, the primary contribution of this work lies in its rigorous experimental methodology. Table 8 outlines the methodological differences of RidgeVision compared to standard paradigms found in recent literature.
 
-### 5.2 The Role of Abstention in Biometric Healthcare AI
-In high-stakes screening, false certainty is actively hazardous. By implementing Split Conformal Prediction, LeakSafe-CGN provides a mathematically backed safety guarantee: whenever an impression is smudged, partial, or anomalous, the prediction set naturally broadens or triggers an explicit abstention (`PREDICTION_WITHHELD`). This ensures that only high-confidence, verified predictions are presented to medical personnel.
+**Table 8: Methodological Comparison with Prior Literature**
+| Dimension | Earlier Studies | LeakSafe-CGN (RidgeVision) |
+| :--- | :--- | :--- |
+| **Target Formulation** | Often flat 8-class softmax | Biologically decoupled: ABO + Rh + joint 8-class |
+| **Data Split** | Often image-level random split | 64-bit pHash-based near-duplicate grouping |
+| **Calibration** | Often absent | Temperature scaling ($T=1.365$) |
+| **Uncertainty Rejection** | Usually forced prediction | Conformal prediction / abstention withholding |
+| **Explainability (XAI)** | Often qualitative edge-proxy heatmaps | Grad-CAM++ + OAAS + MCA (null-controlled) |
+| **Robustness** | Limited to pristine images | Systematic physical perturbation testing |
 
----
+### 5.3 Leakage Mitigation
+A prevalent flaw in single-source public biometric datasets is identity leakage, where highly correlated impressions from the same finger (or donor) inadvertently span both training and test partitions. To address this, the 64-bit pHash protocol was introduced to cluster visually identical or near-duplicate impressions. However, we explicitly acknowledge a foundational limitation: because the public dataset does not provide verified donor identifiers, pHash grouping must be interpreted strictly as **near-duplicate leakage mitigation**, rather than mathematical proof of true, multi-session donor-level independence. 
+
+### 5.4 Calibration and Abstention
+Standard deep neural networks are frequently overconfident on ambiguous or out-of-distribution inputs. Our framework mitigates this by moving beyond forced point predictions. By applying temperature scaling ($T = 1.365$), the model's predictive probabilities became significantly better calibrated under the evaluated calibration procedure, as evidenced by the ECE reduction from $0.0842$ to $0.0412$. When paired with Split Conformal Prediction, the system enforces prediction withholding under defined uncertainty criteria. The correct interpretation of these metrics is that the model's confidence estimates are mathematically calibrated to the validation distribution; this does **not** indicate that the model is "clinically safe" for deployment without human oversight.
+
+### 5.5 Explainability and Biological Grounding
+To interpret the network's spatial reasoning, three mechanisms were deployed:
+* **Grad-CAM++**: Identified influential, class-discriminative image regions via higher-order gradients.
+* **Orientation-Attention Alignment Score (OAAS)**: Tested the alignment between learned attribution and underlying ridge-orientation information using a permutation-based null comparison.
+* **Minutiae-Causal Attribution (MCA)**: Measured prediction confidence changes after targeted occlusion of detected anatomical minutiae regions.
+
+While these experiments verify that the model attends to valid fingerprint structures rather than sensor artifacts, it is imperative to enforce a strict scientific boundary: **attribution to fingerprint structures does not establish biological causation between those structures and the ABO/Rh phenotype.** As noted in our literature audit, there is only weak, mixed clinical evidence for deterministic fingerprint–blood-group relationships. 
+
+### 5.6 Robustness and Failure Modes
+Robustness evaluation identified specific degradation bounds for the architecture (Table 5). The system remained relatively stable under zero-mean additive noise and in-plane angular rotation. Conversely, it exhibited substantial degradation and pronounced failure modes when subjected to optical blur and spatial downsampling, indicating a strong reliance on high-frequency spatial frequencies (micro-textures). These findings demonstrate the implications for acquisition quality: the model requires pristine, high-resolution impressions to function correctly, and sensor degradation will rapidly compromise its predictive integrity.
+
+### 5.7 Biological and Clinical Interpretation
+The results of this study explicitly demonstrate **computational classification performance on the evaluated public dataset**, not clinical diagnostic validity. Our audit acknowledges the weak population-level clinical and dermatoglyphic evidence, the lack of clinical provenance, and the absence of multi-center/multi-scanner validation. Therefore, LeakSafe-CGN must be appropriately positioned as **an exploratory biometric/AI research framework rather than a replacement for serological blood-group testing.** 
+
+### 5.8 Limitations
+The integrity of this research is bounded by several specific limitations:
+1. **Dataset Provenance**: The public Kaggle dataset lacks verified clinical serology provenance.
+2. **Donor Identity**: The absence of verified donor IDs means absolute donor-level separation cannot be guaranteed.
+3. **Sensor Confounding**: Without multi-scanner or multi-center validation, hidden acquisition artifacts cannot be ruled out.
+4. **Biological Validity**: High computational performance does not establish a biological or developmental mechanism linking ridges to blood types.
+5. **External Validation**: The results are confined to this specific cohort and are not yet validated on an independent clinical cohort.
+6. **Rare/Imbalanced Phenotypes**: The dataset contains severe imbalances; for example, the A+ phenotype is represented by only 402 images, limiting robust inference for minority classes.
+7. **Deployment Fallback Artifact**: The project repository contains a deterministic hash-seeded `"research_mode"` fallback mechanism that activates when trained model weights fail. This must be treated strictly as a software development fallback and **not as a scientific prediction mechanism**.
+
+### 5.9 Future Work
+To transition this framework from computational exploration to scientific validation, future work must incorporate:
+* Clinically verified ABO/Rh labels paired with cryptographically verified donor-level identifiers.
+* External validation across a multi-center acquisition pipeline utilizing multiple fingerprint sensors (e.g., capacitive, optical, ultrasound).
+* Broader demographic diversity and larger cohorts to validate performance on rare blood-group phenotypes.
+* Prospective, real-world clinical evaluation.
+* Complete removal and replacement of any non-model deployment fallbacks prior to any production testing.
+
 
 ## 6. Conclusion
 
