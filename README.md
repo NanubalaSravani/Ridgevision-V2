@@ -20,7 +20,7 @@ pinned: false
 
 # 🔗 **Live Demo:** [(RidgeVision AI)](https://ridgevision-ai.onrender.com)
 
-📂 **Repository:** [https://github.com/NanubalaSravani/Ridgevision-ai](https://github.com/NanubalaSravani/Ridgevision-ai)
+📂 **Repository:** [https://github.com/NanubalaSravani/Ridgevision-V2](https://github.com/NanubalaSravani/Ridgevision-V2)
 
 > ⚠️ **Research Prototype v2.0** — Academic research prototype equipped with distribution-free conformal abstention (`PREDICTION_WITHHELD`). Not intended for definitive medical diagnosis.
 
@@ -275,7 +275,7 @@ The confusion matrix below shows the RidgeVision Retrained Two-Model Ensemble pe
 | **Computer Vision** | OpenCV, scikit-image | Image preprocessing and feature extraction |
 | **Explainability** | Grad-CAM-style attention, orientation-field analysis, minutiae ablation | Three-tier explanation stack (attention, alignment, causal attribution) |
 | **Training Environment** | Kaggle (GPU P100) | Model training and experimentation |
-| **Deployment** | Hugging Face Spaces | Cloud hosting and live demo |
+| **Deployment** | Render / Docker | Cloud hosting and live demo |
 
 ---
 
@@ -342,8 +342,8 @@ Ridgevision-ai/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/NanubalaSravani/Ridgevision-ai.git
-cd Ridgevision-ai
+git clone https://github.com/NanubalaSravani/Ridgevision-V2.git
+cd Ridgevision-V2
 ```
 
 ### 2. Create a Virtual Environment
@@ -387,18 +387,24 @@ Place model weights in the `models/` directory. If using Kaggle-trained weights:
 kaggle kernels output sravaninanubala/90-accuracy -p ./models/
 ```
 
-Or download directly from the Hugging Face repo and place `.h5` / `.keras` files in `models/`.
+For deployment, ensure the required `.keras` or `.h5` model files are included in `models/` before building the Docker image.
 
 ---
 
 ## 🚀 Running the App
 
+### Configuration
+
+Copy `.env.example` to `.env` only when you need to customize the application. No API key is required for local inference. For a separately hosted frontend, set `RIDGEVISION_ALLOWED_ORIGINS` to the exact frontend origin(s), separated by commas. Do not commit `.env` or any Kaggle credentials.
+
+The `/health` endpoint reports `model: ready` when trained weights load successfully and `model: missing` when the application cannot find them. Do not use research-mode fallback output as a trained-model result.
+
 ### Local (FastAPI)
 
 ```bash
-uvicorn app:app --reload
+uvicorn backend.main:app --reload --port 8000
 ```
-Open your browser at: `http://localhost:5837`
+Open your browser at: `http://localhost:8000`
 
 ### Using the Web Interface
 
@@ -423,7 +429,7 @@ Open your browser at: `http://localhost:5837`
 
 ### Web Interface — RidgeVision AI (HemaPulse Frontend)
 
-The deployed interface at [sravaninanubala-ridgevision-ai.hf.space](https://sravaninanubala-ridgevision-ai.hf.space/) features:
+The deployed interface at [ridgevision-ai.onrender.com](https://ridgevision-ai.onrender.com/) features:
 
 **Step 1 — Fingerprint Scanner Panel**
 
@@ -489,8 +495,8 @@ This project is released for **academic research and educational purposes only**
 
 <div align="center">
 
-[![Hugging Face](https://img.shields.io/badge/🤗%20HuggingFace-Live%20Demo-yellow?style=for-the-badge)](https://sravaninanubala-ridgevision-ai.hf.space/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/NanubalaSravani/Ridgevision-ai)
+[![Render](https://img.shields.io/badge/Render-Live%20Demo-46E3B7?style=for-the-badge)](https://ridgevision-ai.onrender.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/NanubalaSravani/Ridgevision-V2)
 [![Kaggle](https://img.shields.io/badge/Kaggle-Training%20Notebook-20BEFF?style=for-the-badge&logo=kaggle)](https://www.kaggle.com/code/sravaninanubala/90-accuracy)
 
 </div>

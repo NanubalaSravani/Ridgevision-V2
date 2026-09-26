@@ -23,6 +23,9 @@ from backend.ml.uncertainty.conformal import SplitConformalPredictor
 
 
 MODEL_OUTPUT_LABELS = ["A+", "A-", "AB+", "AB-", "B+", "B-", "O-", "O+"]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MODEL_DIR = PROJECT_ROOT / "models"
+RESULTS_DIR = PROJECT_ROOT / "ridgevisionnet_results"
 
 
 class PredictorError(ValueError):
@@ -43,9 +46,9 @@ class CBAM:
 
 class RidgeVisionPredictor:
     def __init__(self) -> None:
-        self.model_path = Path("models/ridgevision_full_model.keras")
-        self.model_88_path = Path("models/ridgevision_b0_88_style_best.keras")
-        self.model_91_path = Path("models/ridgevision_b3_91_style_best.keras")
+        self.model_path = MODEL_DIR / "ridgevision_full_model.keras"
+        self.model_88_path = MODEL_DIR / "ridgevision_b0_88_style_best.keras"
+        self.model_91_path = MODEL_DIR / "ridgevision_b3_91_style_best.keras"
         self.model = None
         self.model_88 = None
         self.model_91 = None
@@ -69,8 +72,8 @@ class RidgeVisionPredictor:
             loaded = False
             # Check for the primary working model from 90-accuracy.ipynb first
             keras_candidates = [
-                Path("models/ridgevision_full_model.keras"),
-                Path("models/ridgevision_model.keras"),
+                MODEL_DIR / "ridgevision_full_model.keras",
+                MODEL_DIR / "ridgevision_model.keras",
             ]
             for kp in keras_candidates:
                 if kp.exists():
@@ -91,9 +94,9 @@ class RidgeVisionPredictor:
             # Fallback: Load v2 architecture with weights if Keras model not present
             if not loaded:
                 weights_paths = [
-                    Path("models/ridgevision_model.weights.h5"),
-                    Path("ridgevisionnet_results/ridgevision_full_model.weights.h5"),
-                    Path("models/ridgevision_model.h5"),
+                    MODEL_DIR / "ridgevision_model.weights.h5",
+                    RESULTS_DIR / "ridgevision_full_model.weights.h5",
+                    MODEL_DIR / "ridgevision_model.h5",
                 ]
                 for wp in weights_paths:
                     if wp.exists():

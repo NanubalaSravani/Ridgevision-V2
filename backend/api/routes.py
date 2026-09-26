@@ -7,7 +7,14 @@ router = APIRouter()
 
 @router.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok", "service": "RidgeVision AI"}
+    from backend.main import app
+
+    model_ready = bool(getattr(app.state, "model_ready", False))
+    return {
+        "status": "ok" if model_ready else "degraded",
+        "service": "RidgeVision AI",
+        "model": "ready" if model_ready else "missing",
+    }
 
 
 @router.post("/predict")
